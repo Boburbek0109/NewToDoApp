@@ -13,23 +13,13 @@ private var formattedDate: String {
     return formatter.string(from: Date())
 }
 
-struct NewToDoTask: Identifiable, Codable, Equatable {
-    let id: UUID
-    var name: String
-    var isDone: Bool
-
-    init(id: UUID = UUID(), name: String, isDone: Bool) {
-        self.id = id
-        self.name = name
-        self.isDone = isDone
-    }
-}
-
 struct DailyTasks: View {
+    
+    @ObservedObject var vm: TaskViewModel
+    
     @State private var button = false
     @State private var newTask = ""
     @FocusState private var isTextFieldFocused: Bool
-    @Binding var tasks: [NewToDoTask]
 
     var body: some View {
         NavigationStack {
@@ -39,31 +29,40 @@ struct DailyTasks: View {
                         if button {
                             HStack {
                                 TextField("New task...", text: $newTask)
+                                    .background(Color(#colorLiteral(red: 0.6642242074, green: 0.6642400622, blue: 0.6642315388, alpha: 1)))
                                     .textFieldStyle(.roundedBorder)
                                     .focused($isTextFieldFocused)
                                     .onSubmit {
-                                        addTask()
+                                        vm.addTask(from: newTask)
                                     }
 
                                 Button("Add") {
-                                    addTask()
+                                    vm.addTask(from: newTask)
                                 }
                             }
                         }
 
-                        ForEach($tasks) { $task in
+                        ForEach(vm.tasks) { task in
                             HStack {
                                 Text(task.name)
 
                                 Spacer()
 
-                                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
+                                Image(systemName: task.is​Done ? "checkmark.circle.fill" : "circle")
                                     .onTapGesture {
-                                        task.isDone.toggle()
+                                        vm.toggleDone(at: task)
                                     }
                             }
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                Button {
+                                    vm.toggleFavorite(for: task)
+                                } label: {
+                                    Image(systemName: task.isFavorite ? "star.fill" : "star")
+                                }
+                                .tint(task.isFavorite ? .green : .blue)
+                            }
                         }
-                        .onDelete(perform: deleteItem)
+                        .onDelete(perform: vm.deleteItem)
                     }
                 }
                 .navigationTitle(formattedDate)
@@ -85,26 +84,9 @@ struct DailyTasks: View {
                 }
         }
     }
-
-    private func addTask() {
-        let trimmedTask = newTask.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedTask.isEmpty else { return }
-
-        tasks.insert(NewToDoTask(name: trimmedTask, isDone: false), at: 0)
-        newTask = ""
-        button = false
-        isTextFieldFocused = false
-    }
-    
-    
-
-    private func deleteItem(indexSet: IndexSet) {
-        tasks.remove(atOffsets: indexSet)
-    }
 }
 
 #Preview {
-    @Previewable @State var tasks: [NewToDoTask] = []
-    DailyTasks(tasks: $tasks)
+    let vm = TaskViewModel()
+    DailyTasks(vm: vm)
 }

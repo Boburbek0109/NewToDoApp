@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import Combine
 
 struct QuickNote: View {
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject var vm: TaskViewModel
+    
     @State private var inputText = ""
-    @Binding var tasks: [NewToDoTask]
 
     var body: some View {
         ZStack {
@@ -34,7 +36,7 @@ struct QuickNote: View {
                     }
 
                 Button {
-                    saveTask()
+                    vm.addTask(from: inputText)
                 } label: {
                     Text("Save")
                         .font(.headline)
@@ -53,19 +55,10 @@ struct QuickNote: View {
             .padding(.horizontal, 24)
         }
     }
-
-    private func saveTask() {
-        let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedText.isEmpty else { return }
-
-        tasks.append(NewToDoTask(name: trimmedText, isDone: false))
-        inputText = ""
-        dismiss()
-    }
 }
 
 #Preview {
-    @Previewable @State var tasks: [NewToDoTask] = []
-    QuickNote(tasks: $tasks)
+    let vm = TaskViewModel()
+    QuickNote(vm: vm)
 }
+

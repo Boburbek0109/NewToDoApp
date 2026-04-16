@@ -15,8 +15,8 @@ struct CalendarStats {
     static let empty = CalendarStats(currentDay: 1, daysInCurrentMonth: 30, percent: 0)
 }
 
-actor CalendarViewModel {
-    static let instans = CalendarViewModel()
+actor Calendar​Service {
+    static let instans = Calendar​Service()
 
     private let calendar = Calendar.current
 
