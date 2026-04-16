@@ -27,39 +27,39 @@ struct ContentView: View {
                         RoundedRectangle(cornerRadius: 30)
                             .frame(width: 180, height: 180)
                             .foregroundStyle(.gray.opacity(0.4))
-
+                        
                         VStack {
                             HStack {
                                 Text("\(Date().formatted(.dateTime.weekday()))")
                                     .font(.title3)
                                     .bold()
-
+                                
                                 Text("\(Date().formatted(.dateTime.month()))")
                                     .font(.title2)
                                     .opacity(0.55)
                             }
-
+                            
                             Text("\(Date().formatted(.dateTime.day()))")
                                 .font(.system(size: 100, weight: .bold))
                         }
                     }
-
+                    
                     ZStack {
                         RoundedRectangle(cornerRadius: 30)
                             .frame(width: 180, height: 180)
                             .foregroundStyle(.gray.opacity(0.4))
-
+                        
                         VStack {
                             HStack(spacing: 65) {
                                 Text("Days")
                                     .font(.title2)
                                     .bold()
-
+                                
                                 Text("\(Int(calendarStats.percent))%")
                                     .font(.title2)
                                     .opacity(0.55)
                             }
-
+                            
                             LazyVGrid(columns: columns1) {
                                 ForEach(1...calendarStats.daysInCurrentMonth, id: \.self) { day in
                                     Circle()
@@ -70,7 +70,7 @@ struct ContentView: View {
                         }
                     }
                 }
-
+                
                 ZStack {
                     RoundedRectangle(cornerSize: CGSize(width: 30, height: 30))
                         .frame(width: 360, height: 180)
@@ -79,25 +79,25 @@ struct ContentView: View {
                             AddButton()
                                 .padding(.bottom, 12)
                         }
-
+                    
                     VStack(alignment: .leading, spacing: 8) {
                         Spacer()
-
+                        
                         Text("Favorites")
                             .font(.callout)
                             .opacity(0.55)
-
+                        
                         Label("Second Brain", systemImage: "brain")
                         Label("Content Calendar", systemImage: "calendar")
                         Label("Decisions", systemImage: "arrowtriangle.up.circle.fill")
-
+                        
                         Spacer()
                     }
                     .padding(.horizontal)
                     .font(.title3)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 }
-
+                
                 LazyVGrid(columns: columns, spacing: 10) {
                     NavigationLink{
                         QuickNote(tasks: $tasks)
@@ -114,7 +114,7 @@ struct ContentView: View {
                                 .font(.title3)
                         }
                     }
-
+                    
                     NavigationLink{
                         DailyTasks(tasks: $tasks)
                     } label: {
@@ -141,18 +141,18 @@ struct ContentView: View {
             saveItems()
         }
     }
-
+    
     private func saveItems() {
         guard let encodedData = try? JSONEncoder().encode(tasks) else { return }
         UserDefaults.standard.set(encodedData, forKey: storageKey)
     }
-
+    
     private func loadItems() {
         guard
             let data = UserDefaults.standard.data(forKey: storageKey),
             let savedItems = try? JSONDecoder().decode([NewToDoTask].self, from: data)
         else { return }
-
+        
         tasks = savedItems
     }
 }
@@ -160,3 +160,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+
+

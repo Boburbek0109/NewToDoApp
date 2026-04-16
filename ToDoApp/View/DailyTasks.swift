@@ -33,54 +33,56 @@ struct DailyTasks: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
-                List {
-                    if button {
-                        HStack {
-                            TextField("New task...", text: $newTask)
-                                .textFieldStyle(.roundedBorder)
-                                .focused($isTextFieldFocused)
-                                .onSubmit {
+            ZStack{
+                VStack {
+                    List {
+                        if button {
+                            HStack {
+                                TextField("New task...", text: $newTask)
+                                    .textFieldStyle(.roundedBorder)
+                                    .focused($isTextFieldFocused)
+                                    .onSubmit {
+                                        addTask()
+                                    }
+
+                                Button("Add") {
                                     addTask()
                                 }
-
-                            Button("Add") {
-                                addTask()
                             }
                         }
-                    }
 
-                    ForEach($tasks) { $task in
-                        HStack {
-                            Text(task.name)
+                        ForEach($tasks) { $task in
+                            HStack {
+                                Text(task.name)
 
-                            Spacer()
+                                Spacer()
 
-                            Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                                .onTapGesture {
-                                    task.isDone.toggle()
-                                }
+                                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
+                                    .onTapGesture {
+                                        task.isDone.toggle()
+                                    }
+                            }
                         }
+                        .onDelete(perform: deleteItem)
                     }
-                    .onDelete(perform: deleteItem)
                 }
-                
+                .navigationTitle(formattedDate)
+                    
 
-                Button {
-                    button = true
-                    isTextFieldFocused = true
-                } label: {
-                    Image(systemName: "plus")
+                    Button {
+                        button = true
+                        isTextFieldFocused = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(.bottom, 30)
+                    .padding(.trailing, 20)
+                    .font(.system(size: 40))
+                    .buttonBorderShape(.circle)
+                    .buttonStyle(.glass)
+                    .shadow(radius: 8, x: 4, y: 4)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .padding(.bottom, 30)
-                .padding(.trailing, 20)
-                .font(.system(size: 40))
-                .buttonBorderShape(.circle)
-                .buttonStyle(.glass)
-                .shadow(radius: 8, x: 4, y: 4)
-            }
-            .navigationTitle(formattedDate)
         }
     }
 
@@ -89,7 +91,7 @@ struct DailyTasks: View {
 
         guard !trimmedTask.isEmpty else { return }
 
-        tasks.append(NewToDoTask(name: trimmedTask, isDone: false))
+        tasks.insert(NewToDoTask(name: trimmedTask, isDone: false), at: 0)
         newTask = ""
         button = false
         isTextFieldFocused = false
