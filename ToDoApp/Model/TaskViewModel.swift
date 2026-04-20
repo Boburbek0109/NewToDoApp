@@ -8,9 +8,33 @@
 import SwiftUI
 import Combine
 
+struct NewToDoTask: Identifiable,  Codable, Equatable {
+    let id: String
+    let title: String
+    var isDone: Bool
+    var isFavorite: Bool
+    
+    init(id: String = UUID().uuidString, title: String, isDone: Bool, isFavorite: Bool) {
+        self.id = id
+        self.title = title
+        self.isDone = isDone
+        self.isFavorite = isFavorite
+    }
+    
+    func updateTasks() -> NewToDoTask{
+        return NewToDoTask(id: id, title: title, isDone: !isDone, isFavorite: !isFavorite)
+    }
+}
+
+
 class TaskViewModel: ObservableObject {
     
-    @Published var tasks: [NewToDoTask] = []
+    @Published var tasks: [NewToDoTask] = [] {
+        didSet {
+            saveItem()
+        }
+    }
+    
     @Published var inputText = ""
     
     
@@ -20,73 +44,72 @@ class TaskViewModel: ObservableObject {
         tasks.filter { $0.isFavorite }
     }
     
-    struct NewToDoTask: Identifiable, Codable, Equatable {
-        let id: UUID
-        var name: String
-        var is​Done: Bool
-        var isFavorite: Bool
-
-        init(id: UUID = UUID(), name: String, is​Done: Bool, isFavorite: Bool) {
-            self.id = id
-            self.name = name
-            self.is​Done = is​Done
-            self.isFavorite = isFavorite
-        }
-    }
     
     
-    func saveItems() {
+    func saveItem() {
         guard let encodedData = try? JSONEncoder().encode(tasks) else { return }
         UserDefaults.standard.set(encodedData, forKey: storageKey)
     }
     
     
-    func loadItems() {
+    func loadTasks() {
         guard
             let data = UserDefaults.standard.data(forKey: storageKey),
             let savedItems = try? JSONDecoder().decode([NewToDoTask].self, from: data)
         else { return }
         
-        tasks = savedItems
+        self.tasks = savedItems
     }
-
     
-    func saveTask() {
+    
+    func saveTasks() {
+        
         let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-
+        
         guard !trimmedText.isEmpty else { return }
+        
+        tasks.insert(NewToDoTask(title: trimmedText, isDone: false, isFavorite: false), at: 0)
+        
 
-        tasks.insert(NewToDoTask(name: trimmedText, is​Done: false, isFavorite: false), at: 0)
-        inputText = ""
     }
     
     
-    func addTask(from text: String) {
+    func addTasks(from text: String) {
         let trimmedTask = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTask.isEmpty else { return }
-
-        tasks.insert(NewToDoTask(name: trimmedTask, is​Done: false, isFavorite: false), at: 0)
-        saveItems()
+        
+        tasks.insert(NewToDoTask(title: trimmedTask, isDone: false, isFavorite: false), at: 0)
+        saveItem()
     }
     
     
     func toggleDone(at task: NewToDoTask) {
         guard let index = tasks.firstIndex(of: task) else { return }
-        tasks[index].is​Done.toggle()
-        saveItems()
+            tasks[index].isDone.toggle()
+        saveItem()
     }
     
     
     func toggleFavorite(for task: NewToDoTask) {
         guard let index = tasks.firstIndex(of: task) else { return }
         tasks[index].isFavorite.toggle()
-        saveItems()
+        saveItem()
     }
     
-    func deleteItem(at offsets: IndexSet) {
+    func deleteTasks(at offsets: IndexSet) {
         tasks.remove(atOffsets: offsets)
-        saveItems()
+        saveItem()
     }
     
+    func updateTasks(task: NewToDoTask){
+        
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[index] = task.updateTasks()
+        }
+    }
+    
+    func moveTasks(from: IndexSet, to: Int){
+        tasks.move(fromOffsets: from, toOffset: to)
+    }
 }
 

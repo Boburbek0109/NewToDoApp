@@ -84,7 +84,7 @@ struct ContentView: View {
                                 .opacity(0.55)
                         } else {
                             ForEach(vm.favoriteTasks) { task in
-                                Label(task.name, systemImage: "star.fill")
+                                Label(task.title, systemImage: "star.fill")
                             }
                         }
                     }
@@ -112,7 +112,7 @@ struct ContentView: View {
                     }
                     
                     NavigationLink{
-                        DailyTasks(vm: vm)
+                        DailyTasks()
                     } label: {
                         ZStack{
                             RoundedRectangle(cornerRadius: 30)
@@ -132,9 +132,9 @@ struct ContentView: View {
         .task {
             calendarStats = await manager.stats()
         }
-        .onAppear(perform: vm.loadItems)
+        .onAppear(perform: vm.loadTasks)
         .onChange(of: vm.tasks) {
-            vm.saveItems()
+            vm.saveTasks()
         }
     }
 }

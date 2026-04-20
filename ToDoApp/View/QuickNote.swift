@@ -28,7 +28,7 @@ struct QuickNote: View {
                     .font(.title3)
                     .padding(.horizontal, 18)
                     .frame(height: 58)
-                    .background(.white.opacity(0.9))
+                    .background(Color(UIColor.secondarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 18))
                     .overlay {
                         RoundedRectangle(cornerRadius: 18)
@@ -36,7 +36,8 @@ struct QuickNote: View {
                     }
 
                 Button {
-                    vm.addTask(from: inputText)
+                    vm.addTasks(from: inputText)
+                    dismiss()
                 } label: {
                     Text("Save")
                         .font(.headline)
@@ -59,6 +60,5 @@ struct QuickNote: View {
 
 #Preview {
     let vm = TaskViewModel()
-    QuickNote(vm: vm)
+    QuickNote(vm: vm )
 }
-
