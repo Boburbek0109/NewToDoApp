@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
-import Combine
+import SwiftData
+
 
 struct QuickNote: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var vm: TaskViewModel
-    
     @State private var inputText = ""
+
 
     var body: some View {
         ZStack {
@@ -59,6 +60,11 @@ struct QuickNote: View {
 }
 
 #Preview {
-    let vm = TaskViewModel()
-    QuickNote(vm: vm )
+    let container = try! ModelContainer(
+        for: ModelTask.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+
+    QuickNote(vm: TaskViewModel(context: container.mainContext))
+        .modelContainer(container)
 }

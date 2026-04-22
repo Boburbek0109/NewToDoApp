@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 private var formattedDate: String {
     let formatter = DateFormatter()
@@ -15,17 +16,11 @@ private var formattedDate: String {
 
 struct DailyTasks: View {
     
-    @ObservedObject var vm = TaskViewModel()
-    
-    @EnvironmentObject var taskViewModel: TaskViewModel
+    @ObservedObject var vm: TaskViewModel
     
     @State private var button = false
     @State private var newTask = ""
-    
     @FocusState private var isTextFieldFocused: Bool
-    
-    //    @State private var alertTitle: String = ""
-    //    @State private var showAlert = false
     
     var body: some View {
         NavigationStack {
@@ -40,6 +35,7 @@ struct DailyTasks: View {
                                     .focused($isTextFieldFocused)
                                     .onSubmit {
                                         vm.addTasks(from: newTask)
+                                        newTask = ""
                                     }
                                 
                                 Button("Add") {
@@ -53,6 +49,7 @@ struct DailyTasks: View {
                             HStack {
                                 Label {
                                     Text(iList.title)
+                                        .lineLimit(1)
                                 } icon: {
                                     Image(systemName: iList.isDone ? "checkmark.circle.fill" : "circle")
                                         .foregroundStyle(iList.isDone ? .green : .red)
@@ -73,12 +70,8 @@ struct DailyTasks: View {
                                 .tint(iList.isFavorite ? .green : .blue)
                             }
                         }
-                        //                        .onMove(perform: vm.moveTasks)
                         .onDelete(perform: vm.deleteTasks)
                     }
-                    //}
-                    //}
-                    
                 }
                 .navigationTitle(formattedDate)
                 
@@ -101,6 +94,11 @@ struct DailyTasks: View {
 }
 
 #Preview {
-    //let vm = TaskViewModel()
-    DailyTasks()
+    let container = try! ModelContainer(
+        for: ModelTask.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+
+    ContentView(vm: TaskViewModel(context: container.mainContext))
+        .modelContainer(container)
 }
