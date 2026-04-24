@@ -45,32 +45,37 @@ struct DailyTasks: View {
                             }
                         }
                         
-                        ForEach(vm.tasks) { iList in
-                            HStack {
-                                Label {
-                                    Text(iList.title)
-                                        .lineLimit(1)
-                                } icon: {
-                                    Image(systemName: iList.isDone ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(iList.isDone ? .green : .red)
+                        if vm.tasks.isEmpty{
+                            Text("Don't have any tasks today")
+                                .foregroundStyle(Color.secondary)
+                        } else {
+                            ForEach(vm.tasks) { iList in
+                                HStack {
+                                    Label {
+                                        Text(iList.title)
+                                            .lineLimit(1)
+                                    } icon: {
+                                        Image(systemName: iList.isDone ? "checkmark.circle.fill" : "circle")
+                                            .foregroundStyle(iList.isDone ? .green : .red)
+                                    }
+                                }
+                                .onTapGesture {
+                                    withAnimation(.bouncy){
+                                        vm.toggleDone(at: iList)
+                                    }
+                                }
+                                
+                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    Button {
+                                        vm.toggleFavorite(for: iList)
+                                    } label: {
+                                        Image(systemName: iList.isFavorite ? "star.fill" : "star")
+                                    }
+                                    .tint(iList.isFavorite ? .green : .blue)
                                 }
                             }
-                            .onTapGesture {
-                                withAnimation(.bouncy){
-                                    vm.toggleDone(at: iList)
-                                }
-                            }
-                            
-                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                Button {
-                                    vm.toggleFavorite(for: iList)
-                                } label: {
-                                    Image(systemName: iList.isFavorite ? "star.fill" : "star")
-                                }
-                                .tint(iList.isFavorite ? .green : .blue)
-                            }
+                            .onDelete(perform: vm.deleteTasks)
                         }
-                        .onDelete(perform: vm.deleteTasks)
                     }
                 }
                 .navigationTitle(formattedDate)
@@ -99,6 +104,6 @@ struct DailyTasks: View {
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
 
-    ContentView(vm: TaskViewModel(context: container.mainContext))
+    DailyTasks(vm: TaskViewModel(context: container.mainContext))
         .modelContainer(container)
 }

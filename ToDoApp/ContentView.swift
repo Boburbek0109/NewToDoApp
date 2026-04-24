@@ -20,27 +20,19 @@ struct ContentView: View {
                 
                 DataDayView()
                 
-                ZStack {
-                    RoundedRectangle(cornerSize: CGSize(width: 30, height: 30))
-                        .frame(width: 360, height: 180)
-                        .foregroundStyle(.gray.opacity(0.4))
-                    
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        
-                        if vm.favoriteTasks.isEmpty{
-                            Text("Favorites")
-                                .font(.callout)
-                                .opacity(0.55)
-                        } else {
-                            ForEach(vm.favoriteTasks) { task in
-                                Label(task.title, systemImage: "star.fill")
-                            }
+                NavigationLink{
+                    FavoriteView(vm: vm)
+                    } label: {
+                        ZStack{
+                            RoundedRectangle(cornerSize: CGSize(width: 30, height: 30))
+                                .frame(width: 360, height: 180)
+                                .foregroundStyle(.gray.opacity(0.4))
+                                
+                            Label("Favorites", systemImage: "star.fill")
+                                .foregroundStyle(.black)
+                                .font(.title)
+                            
                         }
-                    }
-                    .padding(.horizontal)
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 }
                 
                 
@@ -81,10 +73,6 @@ struct ContentView: View {
             .padding(.horizontal)
         }
         .ignoresSafeArea(edges: .all)
-        .onAppear(perform: vm.loadTasks)
-        .onChange(of: vm.tasks) {
-            vm.saveTasks()
-        }
     }
 }
     

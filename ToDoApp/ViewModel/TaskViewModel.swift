@@ -10,13 +10,14 @@ import SwiftData
 import Combine
 
 @MainActor
-final class TaskViewModel: ObservableObject {
+class TaskViewModel: ObservableObject {
     
     @Published var tasks: [ModelTask] = []
     
     var favoriteTasks: [ModelTask] {
         tasks.filter { $0.isFavorite }
     }
+    
     
     private let context: ModelContext
     
@@ -25,8 +26,11 @@ final class TaskViewModel: ObservableObject {
         loadTasks()
     }
     
+    
     func loadTasks() {
-        let descriptor =  FetchDescriptor<ModelTask>()
+        let descriptor =  FetchDescriptor<ModelTask>(
+            sortBy: [SortDescriptor(\.byCreated, order: .reverse)]
+        )
         tasks = (try? context.fetch(descriptor)) ?? []
     }
     
@@ -42,7 +46,7 @@ final class TaskViewModel: ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
-        let task = ModelTask(title: trimmed, isDone: false, isFavorite: false)
+        let task = ModelTask(title: trimmed, isDone: false, isFavorite: false, byCreated: Date())
         context.insert(task)
         persistChanges()
     }

@@ -14,20 +14,22 @@ class ModelTask: Identifiable {
     var title: String
     var isDone: Bool
     var isFavorite: Bool
+    var byCreated: Date
     
-    init(id: String = UUID().uuidString, title: String, isDone: Bool, isFavorite: Bool) {
+    init(id: String = UUID().uuidString, title: String, isDone: Bool, isFavorite: Bool, byCreated: Date) {
         self.id = id
         self.title = title
         self.isDone = isDone
         self.isFavorite = isFavorite
+        self.byCreated = byCreated
     }
     
 }
 
 extension ModelTask {
     static let tasksSample = [
-        ModelTask(title: "Learn Harder", isDone: false, isFavorite: false),
-        ModelTask(title: "Gym", isDone: false, isFavorite: true)
+        ModelTask(title: "Learn Harder", isDone: false, isFavorite: false, byCreated: Date()),
+        ModelTask(title: "Gym", isDone: false, isFavorite: true, byCreated: Date())
     ]
     
 }

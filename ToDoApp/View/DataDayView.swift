@@ -71,3 +71,8 @@ struct DataDayView: View {
         
     }
 }
+
+
+#Preview {
+    DataDayView()
+}
