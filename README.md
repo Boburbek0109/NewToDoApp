@@ -28,3 +28,4 @@ Helpful resources:
 - https://www.hackingwithswift.com/quick-start/swiftdata/how-to-use-mvvm-to-separate-swiftdata-from-your-views
 - https://www.youtube.com/@seanallen
 - https://www.youtube.com/@SwiftfulThinking
+- and also AI
