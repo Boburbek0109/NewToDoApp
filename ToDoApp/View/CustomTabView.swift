@@ -92,7 +92,6 @@ struct CustomTabView: View {
             }
             
         }
-//        .frame(maxWidth: .infinity, minHeight: .infinity, alignment: .top)
         .background(.gray.opacity(0.1))
     }
     
