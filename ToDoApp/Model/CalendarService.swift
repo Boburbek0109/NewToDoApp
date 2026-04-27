@@ -1,5 +1,5 @@
 //
-//  СalendarService​.swift
+//  CalendarService​.swift
 //  ToDo
 //
 //  Created by Bobur Sobirjanov on 4/10/26.
@@ -15,8 +15,8 @@ struct CalendarStats {
     static let empty = CalendarStats(currentDay: 1, daysInCurrentMonth: 30, percent: 0)
 }
 
-actor СalendarService {
-    static let instans = СalendarService()
+actor CalendarService {
+    static let instans = CalendarService()
 
     private let calendar = Calendar.current
 

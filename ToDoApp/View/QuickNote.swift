@@ -11,7 +11,7 @@ import SwiftData
 
 struct QuickNote: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var vm: TaskViewModel
+    @EnvironmentObject var vm: TaskViewModel
     @State private var inputText = ""
 
 
@@ -64,7 +64,9 @@ struct QuickNote: View {
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
+    let vm = TaskViewModel(context: container.mainContext)
 
-    QuickNote(vm: TaskViewModel(context: container.mainContext))
+    QuickNote()
         .modelContainer(container)
+        .environmentObject(vm)
 }

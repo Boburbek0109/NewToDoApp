@@ -10,7 +10,7 @@ import SwiftData
 
 struct FavoriteView: View {
     
-    @ObservedObject var vm: TaskViewModel
+    @EnvironmentObject var vm: TaskViewModel
  
     var body: some View{
         NavigationStack{
@@ -40,12 +40,13 @@ struct FavoriteView: View {
 
 
 #Preview {
-    
     let container = try! ModelContainer(
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-        )
-    
-    FavoriteView(vm: TaskViewModel(context: container.mainContext))
+    )
+    let vm = TaskViewModel(context: container.mainContext)
+
+    FavoriteView()
         .modelContainer(container)
+        .environmentObject(vm)
 }

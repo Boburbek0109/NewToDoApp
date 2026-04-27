@@ -29,7 +29,7 @@ class TaskViewModel: ObservableObject {
     
     func loadTasks() {
         let descriptor =  FetchDescriptor<ModelTask>(
-            sortBy: [SortDescriptor(\.byCreated, order: .reverse)]
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         tasks = (try? context.fetch(descriptor)) ?? []
     }
@@ -46,7 +46,7 @@ class TaskViewModel: ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
-        let task = ModelTask(title: trimmed, isDone: false, isFavorite: false, byCreated: Date())
+        let task = ModelTask(title: trimmed, isDone: false, isFavorite: false, createdAt: Date())
         context.insert(task)
         persistChanges()
     }
@@ -63,9 +63,9 @@ class TaskViewModel: ObservableObject {
         persistChanges()
     }
     
-    func deleteTasks(at offsets: IndexSet) {
-        for index in offsets{
-            context.delete(tasks[index])
+    func deleteTasks(_ tasksToDelete: [ModelTask]) {
+        for task in tasksToDelete{
+            context.delete(task)
         }
         persistChanges()
     }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DataDayView: View {
     
-    let manager = СalendarService.instans
+    let manager = CalendarService.instans
     @State private var calendarStats = CalendarStats.empty
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]

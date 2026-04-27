@@ -22,7 +22,8 @@ struct ToDoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(vm: vm)
+            ContentView()
+                .environmentObject(vm)
         }
         .modelContainer(container)
     }

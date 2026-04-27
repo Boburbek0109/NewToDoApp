@@ -10,7 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     
-    @ObservedObject var vm: TaskViewModel
+    @EnvironmentObject var vm: TaskViewModel
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -21,11 +21,12 @@ struct ContentView: View {
                 DataDayView()
                 
                 NavigationLink{
-                    FavoriteView(vm: vm)
+                    FavoriteView()
                     } label: {
                         ZStack{
                             RoundedRectangle(cornerSize: CGSize(width: 30, height: 30))
-                                .frame(width: 360, height: 180)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 180)
                                 .foregroundStyle(.gray.opacity(0.4))
                                 
                             Label("Favorites", systemImage: "star.fill")
@@ -39,7 +40,7 @@ struct ContentView: View {
                 LazyVGrid(columns: columns, spacing: 10) {
                     
                     NavigationLink {
-                        QuickNote(vm: vm)
+                        QuickNote()
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 30)
@@ -54,7 +55,7 @@ struct ContentView: View {
                     
                     
                     NavigationLink {
-                        DailyTasks(vm: vm)
+                        CustomTabView()
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 30)
@@ -82,7 +83,9 @@ struct ContentView: View {
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
+    let vm = TaskViewModel(context: container.mainContext)
 
-    ContentView(vm: TaskViewModel(context: container.mainContext))
+    ContentView()
         .modelContainer(container)
+        .environmentObject(vm)
 }
