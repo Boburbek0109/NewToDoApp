@@ -8,6 +8,11 @@ In this project, I implemented:
 - Adding, deleting, completing, and favoriting tasks
 - A separate Favorites screen
 - A cleaner file structure with Model, View, and ViewModel layers
+- Refactored the daily tasks screen into a cleaner tabbed structure
+- Added `TaskPageView` for rendering task lists per tab
+- Reworked `CustomTabView` to handle tab switching and horizontal paging
+- Moved task filtering and empty-state text into `TaskViewModel`
+- Updated the Daily Tasks entry point to open `TaskListView`
 
 ## What I Learned
 
