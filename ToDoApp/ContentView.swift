@@ -55,7 +55,7 @@ struct ContentView: View {
                     
                     
                     NavigationLink {
-                        CustomTabView()
+                        TaskListView()
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 30)

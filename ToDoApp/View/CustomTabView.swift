@@ -15,85 +15,50 @@ struct CustomTabView: View {
     @State private var selectedTab: TabModel? = .all
     @Environment(\.colorScheme) private var scheme
     @State private var tabProgress: CGFloat = 0
-    @State private var showAddTask = false
-    @State private var newTask = ""
-    @FocusState private var isTextFieldFocused: Bool
+    
+    @Binding var selectedTasks: Set<String>
+    @Binding var isSelected: Bool
     
     
     var body: some View {
-        VStack(spacing: 15){
-            HStack{
-                Button {
-                    withAnimation(.bouncy) {
-                        showAddTask.toggle()
-                    }
-                    isTextFieldFocused = showAddTask
-                } label: {
-                    Image(systemName: "plus")
-                }
-                Spacer()
+            VStack(spacing: 15){
                 
-//                Button {} label: {
-//                    Image(systemName: "bell.badge")
-//                }
-            }
-            .font(.title2)
-            .overlay{
-                Text("DailyTasks")
-                    .font(.title3.bold())
-            }
-            .foregroundStyle(.primary)
-            .padding(15)
-            
-            if showAddTask {
-                HStack {
-                    TextField("New task...", text: $newTask)
-                        .textFieldStyle(.roundedBorder)
-                        .focused($isTextFieldFocused)
-                        .onSubmit(addTask)
-                    
-                    Button("Add", action: addTask)
-                }
-                .padding(.horizontal)
-                .transition(.move(edge: .top).combined(with: .opacity))
-            }
-            
-            TasksTabView()
-            
-            GeometryReader{
-                let size = $0.size
-                ScrollView(.horizontal) {
-                    LazyHStack(spacing: 0){
-                        DailyTasks(tab: .all, showsNavigationChrome: false)
-                            .id(TabModel.all)
-                            .containerRelativeFrame(.horizontal)
+                TasksTabView()
+                
+                GeometryReader{
+                    let size = $0.size
+                    ScrollView(.horizontal) {
+                        LazyHStack(spacing: 0){
+                            TaskPageView(tab: .all, selectedTasks: $selectedTasks, isSelected: $isSelected)
+
+                                .id(TabModel.all)
+                                .containerRelativeFrame(.horizontal)
+                            
+                            TaskPageView(tab: .active, selectedTasks: $selectedTasks, isSelected: $isSelected)
+                                .id(TabModel.active)
+                                .containerRelativeFrame(.horizontal)
+                            
+                            TaskPageView(tab: .completed, selectedTasks: $selectedTasks, isSelected: $isSelected)
+                                .id(TabModel.completed)
+                                .containerRelativeFrame(.horizontal)
+                        }
                         
-                        DailyTasks(tab: .active, showsNavigationChrome: false)
-                            .id(TabModel.active)
-                            .containerRelativeFrame(.horizontal)
-                        
-                        DailyTasks(tab: .completed, showsNavigationChrome: false)
-                            .id(TabModel.completed)
-                            .containerRelativeFrame(.horizontal)
+                        .scrollTargetLayout()
+                        .offsetX { value in
+                            let progress = -value / (size.width * CGFloat(TabModel.allCases.count - 1))
+                            
+                            tabProgress = max(min(progress, 1), 0)
+                        }
                     }
                     
-                    .scrollTargetLayout()
-                    .offsetX { value in
-                        let progress = -value / (size.width * CGFloat(TabModel.allCases.count - 1))
-                        
-                        tabProgress = max(min(progress, 1), 0)
-                    }
+                    .scrollPosition(id: $selectedTab)
+                    .scrollIndicators(.hidden)
+                    .scrollTargetBehavior(.paging)
+                    .scrollClipDisabled()
                 }
-                
-                .scrollPosition(id: $selectedTab)
-                .scrollIndicators(.hidden)
-                .scrollTargetBehavior(.paging)
-                .scrollClipDisabled()
+                .background(.gray.opacity(0.1))
             }
-            
         }
-        .background(.gray.opacity(0.1))
-    }
     
     
     @ViewBuilder
@@ -127,18 +92,15 @@ struct CustomTabView: View {
                     .frame(width: capsuleWidth)
                     .offset(x: tabProgress * (size.width - capsuleWidth))
             }
+            .glassEffect(.regular)
         }
         .background(.gray.opacity(0.1), in: .capsule)
         .padding(.horizontal)
         
         
     }
-     
-    private func addTask() {
-        vm.addTasks(from: newTask)
-        newTask = ""
-    }
 }
+
 
 
 #Preview {
@@ -148,7 +110,9 @@ struct CustomTabView: View {
     )
     let vm = TaskViewModel(context: container.mainContext)
 
-    CustomTabView()
+    CustomTabView(
+        selectedTasks: .constant(Set<String>()),
+        isSelected: .constant(false))
         .modelContainer(container)
         .environmentObject(vm)
 }

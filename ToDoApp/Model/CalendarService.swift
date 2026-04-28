@@ -40,3 +40,10 @@ actor CalendarService {
         )
     }
 }
+
+
+var formattedDate: String {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MMMM d"
+    return formatter.string(from: Date())
+}

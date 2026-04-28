@@ -70,6 +70,28 @@ class TaskViewModel: ObservableObject {
         persistChanges()
     }
     
+    func visibleTasks (for tab: TabModel) -> [ModelTask] {
+        switch tab {
+        case .all:
+            return tasks
+        case .active:
+            return tasks.filter { !$0.isDone }
+        case .completed:
+            return tasks.filter { $0.isDone }
+        }
+    }
+
+    func emptyText(for tab: TabModel) -> String {
+        switch tab {
+        case .all:
+            return "Don't have any tasks today"
+        case .active:
+            return "No active tasks"
+        case .completed:
+            return "No completed tasks"
+        }
+    }
+
     func moveTasks(from: IndexSet, to: Int){
         tasks.move(fromOffsets: from, toOffset: to)
     }
@@ -78,4 +100,6 @@ class TaskViewModel: ObservableObject {
         saveTasks()
         loadTasks()
     }
+    
+    
 }
