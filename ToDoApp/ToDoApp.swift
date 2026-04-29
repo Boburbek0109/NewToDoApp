@@ -73,6 +73,3 @@ struct ToDoApp: App {
         }
     }
 }
-
-
-//Thread 1: Fatal error: Failed to Create ModelContainer: SwiftDataError(_error: SwiftData.SwiftDataError._Error.loadIssueModelContainer, _explanation: nil)
