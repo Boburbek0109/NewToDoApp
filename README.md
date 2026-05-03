@@ -20,7 +20,11 @@ While building this project, I learned how to connect SwiftData with a ViewModel
 
 
 
-https://github.com/user-attachments/assets/f94f7d2f-ef99-4730-9b95-5c7eec17f5f2
+
+
+https://github.com/user-attachments/assets/97689a6b-d515-489a-92b2-1ec8c6a01186
+
+
 
 
 
