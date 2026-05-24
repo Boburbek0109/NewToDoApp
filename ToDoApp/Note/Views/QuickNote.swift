@@ -52,6 +52,7 @@ struct QuickNote: View {
                                 NavigationLink(destination: NoteEditorView(notes: note)) {
                                     NoteRow(notes: note)
                                 }
+                                .buttonStyle(.plain)
                                 .contextMenu{
                                     Button(role: .destructive) {
                                         noteVM.deleteNotes([note])

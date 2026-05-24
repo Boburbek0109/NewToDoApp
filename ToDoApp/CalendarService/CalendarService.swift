@@ -16,7 +16,7 @@ struct CalendarStats {
 }
 
 actor CalendarService {
-    static let instans = CalendarService()
+    static let instance = CalendarService()
 
     private let calendar = Calendar.current
 

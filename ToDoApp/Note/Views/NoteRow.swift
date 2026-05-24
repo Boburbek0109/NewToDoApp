@@ -12,14 +12,15 @@ struct NoteRow: View {
     let notes: ModelNote
     
     var body: some View {
-        VStack{
+        VStack(alignment: .leading){
             
             Text(notes.title.isEmpty ? "Untitled" : notes.title)
                 .font(.headline)
-                .lineLimit(4)
+                .lineLimit(1)
             
             Text(notes.content)
                 .font(.subheadline)
+                .lineLimit(4)
 
             Spacer()
             
@@ -28,7 +29,8 @@ struct NoteRow: View {
                 .foregroundStyle(.secondary)
         }
         .padding(10)
-        .frame(width: 180, height: 180)
+        .frame(width: 180, height: 180, alignment: .topLeading)
+        .contentShape(Rectangle())
         .clipped()
         .overlay {
             RoundedRectangle(cornerRadius: 12)
