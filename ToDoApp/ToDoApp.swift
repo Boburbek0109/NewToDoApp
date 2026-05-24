@@ -12,24 +12,29 @@ import SwiftData
 struct ToDoApp: App {
     
     private var container: ModelContainer
-    @StateObject private var vm: TaskViewModel
+    @StateObject private var taskVM: TaskViewModel
+    @StateObject private var noteVM: NoteViewModel
     
     init() {
         let container = Self.makeContainer()
         self.container = container
-        _vm = StateObject(wrappedValue: TaskViewModel(context: container.mainContext))
+        _taskVM = StateObject(wrappedValue: TaskViewModel(context: container.mainContext))
+        _noteVM = StateObject(wrappedValue: NoteViewModel(noteContext: container.mainContext))
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(vm)
+                .environmentObject(taskVM)
+                .environmentObject(noteVM)
         }
         .modelContainer(container)
     }
 
     private static func makeContainer() -> ModelContainer {
-        let schema = Schema([ModelTask.self])
+        let schema = Schema([
+            ModelTask.self,
+            ModelNote.self])
         let storeURL = makeStoreURL()
         let configuration = ModelConfiguration("ToDo", schema: schema, url: storeURL)
 

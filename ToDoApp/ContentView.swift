@@ -10,7 +10,8 @@ import SwiftData
 
 struct ContentView: View {
     
-    @EnvironmentObject var vm: TaskViewModel
+    @EnvironmentObject var taskVM: TaskViewModel
+    @EnvironmentObject var noteVM: NoteViewModel
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -47,7 +48,7 @@ struct ContentView: View {
                                 .frame(width: 180, height: 180)
                                 .foregroundStyle(.gray.opacity(0.4))
 
-                            Label("Quick Note", systemImage: "pencil")
+                            Label("Note your plans", systemImage: "pencil")
                                 .foregroundStyle(.black)
                                 .font(.title3)
                         }
@@ -80,12 +81,15 @@ struct ContentView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: ModelTask.self,
+        for: ModelTask.self, ModelNote.self,
+        
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
-    let vm = TaskViewModel(context: container.mainContext)
-
+    let taskVM = TaskViewModel(context: container.mainContext)
+    let noteVM = NoteViewModel(noteContext: container.mainContext)
+    
     ContentView()
         .modelContainer(container)
-        .environmentObject(vm)
+        .environmentObject(taskVM)
+        .environmentObject(noteVM)
 }

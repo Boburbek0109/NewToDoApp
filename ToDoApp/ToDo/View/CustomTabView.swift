@@ -10,7 +10,7 @@ import SwiftData
 
 struct CustomTabView: View {
     
-    @EnvironmentObject var vm: TaskViewModel
+    @EnvironmentObject var taskVM: TaskViewModel
     
     @State private var selectedTab: TabModel? = .all
     @Environment(\.colorScheme) private var scheme
@@ -61,6 +61,7 @@ struct CustomTabView: View {
         }
     
     
+    
     @ViewBuilder
     func TasksTabView() -> some View {
         HStack(spacing: 0){
@@ -108,11 +109,11 @@ struct CustomTabView: View {
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
-    let vm = TaskViewModel(context: container.mainContext)
+    let taskVM = TaskViewModel(context: container.mainContext)
 
     CustomTabView(
         selectedTasks: .constant(Set<String>()),
         isSelected: .constant(false))
         .modelContainer(container)
-        .environmentObject(vm)
+        .environmentObject(taskVM)
 }

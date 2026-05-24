@@ -47,3 +47,12 @@ var formattedDate: String {
     formatter.dateFormat = "MMMM d"
     return formatter.string(from: Date())
 }
+
+extension DateFormatter {
+    static let dateFormatted: DateFormatter = {
+        let time = DateFormatter()
+        time.dateStyle = .short
+        time.timeStyle = .short
+        return time
+    }()
+}

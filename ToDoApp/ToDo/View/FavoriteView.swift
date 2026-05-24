@@ -10,20 +10,20 @@ import SwiftData
 
 struct FavoriteView: View {
     
-    @EnvironmentObject var vm: TaskViewModel
+    @EnvironmentObject var taskVM: TaskViewModel
  
     var body: some View{
         NavigationStack{
             List{
-                if vm.favoriteTasks.isEmpty{
+                if taskVM.favoriteTasks.isEmpty{
                     Text("No favorite task yet")
                         .foregroundStyle(Color.secondary)
                 } else {
-                    ForEach(vm.favoriteTasks) { text in
+                    ForEach(taskVM.favoriteTasks) { text in
                         Label(text.title, systemImage: "star.fill")
                             .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                 Button {
-                                    vm.toggleFavorite(for: text)
+                                    taskVM.toggleFavorite(for: text)
                                 } label: {
                                     Image(systemName: "star.slash")
                                 }
@@ -44,9 +44,9 @@ struct FavoriteView: View {
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
-    let vm = TaskViewModel(context: container.mainContext)
+    let taskVM = TaskViewModel(context: container.mainContext)
 
     FavoriteView()
         .modelContainer(container)
-        .environmentObject(vm)
+        .environmentObject(taskVM)
 }

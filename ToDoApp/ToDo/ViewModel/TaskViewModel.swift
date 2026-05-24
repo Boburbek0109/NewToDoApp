@@ -12,7 +12,7 @@ import Combine
 @MainActor
 class TaskViewModel: ObservableObject {
     
-    @Published var tasks: [ModelTask] = []
+    @Published private(set) var tasks: [ModelTask] = []
     
     var favoriteTasks: [ModelTask] {
         tasks.filter { $0.isFavorite }
@@ -46,7 +46,7 @@ class TaskViewModel: ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
-        let task = ModelTask(title: trimmed, isDone: false, isFavorite: false, createdAt: Date())
+        let task = ModelTask(title: trimmed)
         context.insert(task)
         persistChanges()
     }
@@ -90,10 +90,6 @@ class TaskViewModel: ObservableObject {
         case .completed:
             return "No completed tasks"
         }
-    }
-
-    func moveTasks(from: IndexSet, to: Int){
-        tasks.move(fromOffsets: from, toOffset: to)
     }
     
     private func persistChanges(){

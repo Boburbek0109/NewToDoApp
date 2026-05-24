@@ -10,7 +10,7 @@ import SwiftData
 
 struct TaskPageView: View{
     
-    @EnvironmentObject var vm: TaskViewModel
+    @EnvironmentObject var taskVM: TaskViewModel
     
     let tab: TabModel
     @Binding var selectedTasks: Set<String>
@@ -18,11 +18,11 @@ struct TaskPageView: View{
     
     var body: some View{
         List {
-            if vm.visibleTasks(for: tab).isEmpty{
-                Text(vm.emptyText(for: tab))
+            if taskVM.visibleTasks(for: tab).isEmpty{
+                Text(taskVM.emptyText(for: tab))
                     .foregroundStyle(Color.secondary)
             } else {
-                ForEach(vm.visibleTasks(for: tab), id: \.id) { iList in
+                ForEach(taskVM.visibleTasks(for: tab), id: \.id) { iList in
                     HStack {
                         if isSelected {
                             Text(iList.title)
@@ -53,7 +53,7 @@ struct TaskPageView: View{
                                     selectedTasks.insert(iList.id)
                                 }
                             } else {
-                                vm.toggleDone(at: iList)
+                                taskVM.toggleDone(at: iList)
                             }
                         }
                     }
@@ -86,13 +86,13 @@ struct TaskPageView: View{
     }
     
     private var selectedVisibleTasks: [ModelTask] {
-        vm.visibleTasks(for: tab).filter { selectedTasks.contains($0.id) }
+        taskVM.visibleTasks(for: tab).filter { selectedTasks.contains($0.id) }
     }
     
     private func favoriteSelectedTasks() {
         selectedVisibleTasks.forEach { task in
             if !task.isFavorite {
-                vm.toggleFavorite(for: task)
+                taskVM.toggleFavorite(for: task)
             }
         }
         selectedTasks.removeAll()
@@ -100,7 +100,7 @@ struct TaskPageView: View{
     }
     
     private func deleteSelectedTasks() {
-        vm.deleteTasks(selectedVisibleTasks)
+        taskVM.deleteTasks(selectedVisibleTasks)
         selectedTasks.removeAll()
         isSelected = false
     }
@@ -112,7 +112,7 @@ struct TaskPageView: View{
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
-    let vm = TaskViewModel(context: container.mainContext)
+    let taskVM = TaskViewModel(context: container.mainContext)
 
     TaskPageView(
         tab: .all,
@@ -120,5 +120,5 @@ struct TaskPageView: View{
         isSelected: .constant(false)
     )
         .modelContainer(container)
-        .environmentObject(vm)
+        .environmentObject(taskVM)
 }

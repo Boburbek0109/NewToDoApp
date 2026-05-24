@@ -10,7 +10,7 @@ import SwiftData
 
 struct TaskListView: View {
     
-    @EnvironmentObject var vm: TaskViewModel
+    @EnvironmentObject var taskVM: TaskViewModel
     let tab: TabModel
     let showsNavigationChrome: Bool
     
@@ -37,12 +37,12 @@ struct TaskListView: View {
                                 .textFieldStyle(.roundedBorder)
                                 .focused($isTextFieldFocused)
                                 .onSubmit{
-                                    vm.addTasks(from: newTask)
+                                    taskVM.addTasks(from: newTask)
                                     newTask = ""
                                 }
                             
                             Button("Add", action: {
-                                vm.addTasks(from: newTask)
+                                taskVM.addTasks(from: newTask)
                                 newTask = ""
                             })
                         }
@@ -83,9 +83,9 @@ struct TaskListView: View {
         for: ModelTask.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
-    let vm = TaskViewModel(context: container.mainContext)
+    let taskVM = TaskViewModel(context: container.mainContext)
 
     TaskListView()
         .modelContainer(container)
-        .environmentObject(vm)
+        .environmentObject(taskVM)
 }
