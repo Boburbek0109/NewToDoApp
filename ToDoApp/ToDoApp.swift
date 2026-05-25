@@ -34,7 +34,8 @@ struct ToDoApp: App {
     private static func makeContainer() -> ModelContainer {
         let schema = Schema([
             ModelTask.self,
-            ModelNote.self])
+            ModelNote.self,
+            NoteCategory.self])
         let storeURL = makeStoreURL()
         let configuration = ModelConfiguration("ToDo", schema: schema, url: storeURL)
 

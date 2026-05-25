@@ -10,7 +10,7 @@ import SwiftData
 import Combine
 
 @MainActor
-class TaskViewModel: ObservableObject {
+final class TaskViewModel: ObservableObject {
     
     @Published private(set) var tasks: [ModelTask] = []
     

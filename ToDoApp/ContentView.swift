@@ -10,9 +10,6 @@ import SwiftData
 
 struct ContentView: View {
     
-    @EnvironmentObject var taskVM: TaskViewModel
-    @EnvironmentObject var noteVM: NoteViewModel
-    
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {

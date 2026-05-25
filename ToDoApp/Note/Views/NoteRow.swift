@@ -30,7 +30,11 @@ struct NoteRow: View {
         }
         .padding(10)
         .frame(width: 180, height: 180, alignment: .topLeading)
-        .contentShape(Rectangle())
+        .background{
+            RoundedRectangle(cornerRadius: 12)
+                .fill(NoteCategoryColor.color(for: notes.category?.colorKey ?? "").opacity(0.25))
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 12))
         .clipped()
         .overlay {
             RoundedRectangle(cornerRadius: 12)

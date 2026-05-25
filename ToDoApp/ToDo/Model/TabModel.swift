@@ -5,7 +5,7 @@
 //  Created by Bobur Sobirjanov on 4/25/26.
 //
 
-import SwiftUI
+import Foundation
 
 enum TabModel: String, CaseIterable {
     case all = "All"

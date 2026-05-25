@@ -45,7 +45,6 @@ struct TaskListView: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {
                     showsAddTaskField.toggle()
-//                    isTextFieldFocused = true
                 } label: {
                     Image(systemName: "plus")
                 }

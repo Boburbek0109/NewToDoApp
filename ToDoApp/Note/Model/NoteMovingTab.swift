@@ -1,14 +1,15 @@
 //
-//  MovingTabView.swift
+//  NoteMovingTab.swift
 //  ToDo
 //
-//  Created by Bobur Sobirjanov on 4/26/26.
+//  Created by Bobur Sobirjanov on 5/25/26.
 //
 
 import SwiftUI
 
-struct OffsetKey: PreferenceKey {
+struct NoteOffsetKey: PreferenceKey {
     static var defaultValue: CGFloat = .zero
+    
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }
@@ -16,21 +17,21 @@ struct OffsetKey: PreferenceKey {
 
 extension View{
     @ViewBuilder
-    func offsetX(completion: @escaping (CGFloat) -> ()) -> some View {
+    func noteOffsetX(completion: @escaping (CGFloat) -> ()) -> some View {
         self
             .overlay {
                 GeometryReader {
                     let minX = $0.frame(in: .scrollView(axis: .horizontal)).minX
                     
                     Color.clear
-                        .preference(key: OffsetKey.self, value: minX)
-                        .onPreferenceChange(OffsetKey.self, perform: completion)
+                        .preference(key: NoteOffsetKey.self, value: minX)
+                        .onPreferenceChange(NoteOffsetKey.self, perform: completion)
                 }
             }
     }
     
     @ViewBuilder
-    func tabMask(_ tabProgress: CGFloat) -> some View{
+    func noteTabMask(_ tabProgress: CGFloat, tabCount: Int) -> some View{
         ZStack{
             self
                 .foregroundStyle(.gray)
@@ -39,7 +40,7 @@ extension View{
                 .mask{
                     GeometryReader{
                         let size = $0.size
-                        let capsuleWidth = size.width / CGFloat(TabModel.allCases.count)
+                        let capsuleWidth = size.width / CGFloat(tabCount)
                         
                         Capsule()
                             .frame(width: capsuleWidth)
@@ -49,3 +50,4 @@ extension View{
         }
     }
 }
+

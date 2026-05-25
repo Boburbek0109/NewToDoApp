@@ -15,18 +15,21 @@ final class ModelNote: Identifiable{
     var content: String
     var createdAt: Date
     var modifiedAt: Date
+    var category: NoteCategory?
     
     init(
         id: UUID = UUID(),
         title: String = "",
         content: String = "",
         createdAt: Date = Date(),
-        modifiedAt: Date = Date()
+        modifiedAt: Date = Date(),
+        category: NoteCategory? = nil
     ){
         self.id = id
         self.title = title
         self.content = content
         self.createdAt = createdAt
         self.modifiedAt = modifiedAt
+        self.category = category
     }
 }

@@ -10,60 +10,25 @@ import SwiftData
 
 
 struct QuickNote: View {
+    
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var noteVM: NoteViewModel
+    
+    @State private var selectedCategory: NoteCategory? = nil
     @State private var inputText = ""
     @State private var showNewNote = false
 
-    var filteredNotes: [ModelNote] {
-        if inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return noteVM.notes
-        }
-        
-        let q = inputText.lowercased()
-        
-        return noteVM.notes.filter { note in
-            note.title.lowercased().contains(q) ||
-            note.content.lowercased().contains(q)
-        }
-    }
-    
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-
     var body: some View {
             ZStack(alignment: .bottomTrailing) {
-                
-                if filteredNotes.isEmpty{
-                    VStack(spacing: 8) {
-                        Text("Write something...")
-                            .font(.headline)
-                        Text("Tap + to add a new notes")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ScrollView{
-                        LazyVGrid(columns: columns) {
-                            ForEach(filteredNotes) { note in
-                                NavigationLink(destination: NoteEditorView(notes: note)) {
-                                    NoteRow(notes: note)
-                                }
-                                .buttonStyle(.plain)
-                                .contextMenu{
-                                    Button(role: .destructive) {
-                                        noteVM.deleteNotes([note])
-                                    } label : {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
-                            }
-                            .padding()
-                        }
-                    }
+                VStack{
+                    
+                    NoteCategoryTabBar(selectedCategory: $selectedCategory,
+                                       categories: noteVM.usedCategories)
+                    
+                    NotePageView(
+                        searchText: inputText,
+                        category: selectedCategory)
+                    
                 }
                 Button( action: {
                     showNewNote = true
