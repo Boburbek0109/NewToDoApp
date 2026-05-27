@@ -10,10 +10,6 @@ import SwiftUI
 struct NotePageView: View {
     @EnvironmentObject var noteVM: NoteViewModel
     
-    @State private var selectedNoteForCategory: ModelNote?
-    @State private var selectedColorKey: String?
-    @State private var  showCategoryNameSheet = false
-    
     let searchText: String
     let category: NoteCategory?
     
@@ -58,11 +54,8 @@ struct NotePageView: View {
                         }
                         .buttonStyle(.plain)
                         .contextMenu{
-                            NoteCategoryMenu(notes: note){ note, colorKey in
-                                selectedNoteForCategory = note
-                                selectedColorKey = colorKey
-                                showCategoryNameSheet = true
-                            }
+                            NoteCategoryMenu(notes: note)
+                            
                             Button(role: .destructive) {
                                 noteVM.deleteNotes([note])
                             } label : {

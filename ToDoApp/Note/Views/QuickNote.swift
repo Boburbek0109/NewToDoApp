@@ -14,21 +14,13 @@ struct QuickNote: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var noteVM: NoteViewModel
     
-    @State private var selectedCategory: NoteCategory? = nil
     @State private var inputText = ""
     @State private var showNewNote = false
 
     var body: some View {
             ZStack(alignment: .bottomTrailing) {
                 VStack{
-                    
-                    NoteCategoryTabBar(selectedCategory: $selectedCategory,
-                                       categories: noteVM.usedCategories)
-                    
-                    NotePageView(
-                        searchText: inputText,
-                        category: selectedCategory)
-                    
+                    NoteCategoryPagerView(searchText: inputText)
                 }
                 Button( action: {
                     showNewNote = true

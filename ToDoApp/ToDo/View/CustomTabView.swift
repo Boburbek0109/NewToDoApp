@@ -1,5 +1,5 @@
 //
-//  CustumTabView.swift
+//  CustomTabView.swift
 //  ToDo
 //
 //  Created by Bobur Sobirjanov on 4/26/26.
@@ -23,26 +23,19 @@ struct CustomTabView: View {
     var body: some View {
             VStack(spacing: 15){
                 
-                TasksTabView()
+                tasksTabView
                 
                 GeometryReader{
                     let size = $0.size
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 0){
-                            TaskPageView(tab: .all, selectedTasks: $selectedTasks, isSelected: $isSelected)
+                            ForEach(TabModel.allCases, id: \.self){ tab in
+                                TaskPageView(tab: tab, selectedTasks: $selectedTasks, isSelected: $isSelected)
 
-                                .id(TabModel.all)
-                                .containerRelativeFrame(.horizontal)
-                            
-                            TaskPageView(tab: .active, selectedTasks: $selectedTasks, isSelected: $isSelected)
-                                .id(TabModel.active)
-                                .containerRelativeFrame(.horizontal)
-                            
-                            TaskPageView(tab: .completed, selectedTasks: $selectedTasks, isSelected: $isSelected)
-                                .id(TabModel.completed)
-                                .containerRelativeFrame(.horizontal)
+                                    .id(tab)
+                                    .containerRelativeFrame(.horizontal)
+                            }
                         }
-                        
                         .scrollTargetLayout()
                         .offsetX { value in
                             let progress = -value / (size.width * CGFloat(TabModel.allCases.count - 1))
@@ -61,10 +54,8 @@ struct CustomTabView: View {
         }
     
     
-    
-    @ViewBuilder
-    func TasksTabView() -> some View {
-        HStack(spacing: 0){
+    private var tasksTabView: some View {
+        HStack{
             ForEach(TabModel.allCases, id: \.rawValue){ tab in
                 HStack(spacing: 10) {
                     Image(systemName: tab.systemImage)
@@ -82,7 +73,7 @@ struct CustomTabView: View {
                 }
             }
         }
-        .tabMask(tabProgress)
+        .tabMask(tabProgress, tabCount: TabModel.allCases.count)
         .background{
             GeometryReader{
                 let size = $0.size
@@ -97,8 +88,6 @@ struct CustomTabView: View {
         }
         .background(.gray.opacity(0.1), in: .capsule)
         .padding(.horizontal)
-        
-        
     }
 }
 

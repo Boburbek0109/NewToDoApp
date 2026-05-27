@@ -137,5 +137,14 @@ final class NoteViewModel: ObservableObject {
                 note.category?.id == category.id
             }
         }
+        .sorted { $0.createdAt < $1.createdAt}
+    }
+    
+    func renameCategory(_ category: NoteCategory,  name: String){
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        
+        category.name = trimmedName
+        persistChanges()
     }
 }

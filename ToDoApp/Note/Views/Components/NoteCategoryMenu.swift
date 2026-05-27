@@ -11,7 +11,6 @@ struct NoteCategoryMenu: View {
     @EnvironmentObject var noteVM: NoteViewModel
     
     let notes: ModelNote
-    let onNeedsName: (ModelNote, String) -> Void
     
     var body: some View {
         Section("Color"){

@@ -1,37 +1,36 @@
 //
-//  NoteMovingTab.swift
+//  TabPagingModifiers.swift
 //  ToDo
 //
-//  Created by Bobur Sobirjanov on 5/25/26.
+//  Created by Bobur Sobirjanov on 4/26/26.
 //
 
 import SwiftUI
 
-struct NoteOffsetKey: PreferenceKey {
+struct OffsetKey: PreferenceKey {
     static var defaultValue: CGFloat = .zero
-    
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }
 }
 
 extension View{
-    @ViewBuilder
-    func noteOffsetX(completion: @escaping (CGFloat) -> ()) -> some View {
+
+    func offsetX(completion: @escaping (CGFloat) -> ()) -> some View {
         self
             .overlay {
                 GeometryReader {
                     let minX = $0.frame(in: .scrollView(axis: .horizontal)).minX
                     
                     Color.clear
-                        .preference(key: NoteOffsetKey.self, value: minX)
-                        .onPreferenceChange(NoteOffsetKey.self, perform: completion)
+                        .preference(key: OffsetKey.self, value: minX)
+                        .onPreferenceChange(OffsetKey.self, perform: completion)
                 }
             }
     }
     
-    @ViewBuilder
-    func noteTabMask(_ tabProgress: CGFloat, tabCount: Int) -> some View{
+    
+    func tabMask(_ tabProgress: CGFloat, tabCount: Int) -> some View{
         ZStack{
             self
                 .foregroundStyle(.gray)
@@ -50,4 +49,3 @@ extension View{
         }
     }
 }
-
