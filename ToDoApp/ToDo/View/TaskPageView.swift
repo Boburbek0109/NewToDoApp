@@ -6,14 +6,13 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct TaskPageView: View{
     
     @EnvironmentObject var taskVM: TaskViewModel
     
     let tab: TabModel
-    @Binding var selectedTasks: Set<String>
+    @Binding var selectedTasks: Set<UUID>
     @Binding var isSelected: Bool
     
     var body: some View{
@@ -104,21 +103,4 @@ struct TaskPageView: View{
         selectedTasks.removeAll()
         isSelected = false
     }
-}
-
-
-#Preview {
-    let container = try! ModelContainer(
-        for: ModelTask.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
-    let taskVM = TaskViewModel(context: container.mainContext)
-
-    TaskPageView(
-        tab: .all,
-        selectedTasks: .constant(Set<String>()),
-        isSelected: .constant(false)
-    )
-        .modelContainer(container)
-        .environmentObject(taskVM)
 }

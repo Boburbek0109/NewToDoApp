@@ -50,30 +50,30 @@ final class NoteViewModel: ObservableObject {
         
         guard !trimmedTitle.isEmpty || !trimmedContent.isEmpty else { return }
         
-        let notes = ModelNote(
+        let note = ModelNote(
             title: trimmedTitle.isEmpty ? "Untitled" : trimmedTitle,
             content: trimmedContent
         )
-        noteContext.insert(notes)
+        noteContext.insert(note)
         persistChanges()
     }
     
-    func updateNote(_ notes: ModelNote, title: String, content: String) {
+    func updateNote(_ note: ModelNote, title: String, content: String) {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !trimmedTitle.isEmpty || !trimmedContent.isEmpty else { return }
         
-        notes.title = trimmedTitle.isEmpty ? "Untitled" : trimmedTitle
-        notes.content = trimmedContent
-        notes.modifiedAt = Date()
+        note.title = trimmedTitle.isEmpty ? "Untitled" : trimmedTitle
+        note.content = trimmedContent
+        note.modifiedAt = Date()
         
         persistChanges()
     }
     
     func deleteNotes(_ notesToDelete: [ModelNote]) {
-        for notes in notesToDelete {
-            noteContext.delete(notes)
+        for note in notesToDelete {
+            noteContext.delete(note)
         }
         persistChanges()
     }

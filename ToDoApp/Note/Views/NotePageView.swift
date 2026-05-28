@@ -26,7 +26,7 @@ struct NotePageView: View {
             return basedNotes
         }
         
-        let q = searchText.lowercased()
+        let q = trimmedSearch.lowercased()
         
         return basedNotes.filter { note in
             note.title.lowercased().contains(q) ||

@@ -10,14 +10,14 @@ import SwiftData
 
 @Model
 final class ModelTask: Identifiable {
-    var id: String
+    var id = UUID()
     var title: String
     var isDone: Bool
     var isFavorite: Bool
     var createdAt: Date
     
     init(
-        id: String = UUID().uuidString,
+        id: UUID = UUID(),
         title: String,
         isDone: Bool = false,
         isFavorite: Bool = false,

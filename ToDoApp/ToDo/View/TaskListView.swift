@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct TaskListView: View {
     
@@ -17,7 +16,7 @@ struct TaskListView: View {
     @FocusState private var isTextFieldFocused: Bool
     
     @State private var isSelected = false
-    @State private var selectedTasks = Set<String>()
+    @State private var selectedTasks = Set<UUID>()
     
     var body: some View {
         VStack{
@@ -31,7 +30,7 @@ struct TaskListView: View {
                         }
                     
                     Button("Add", action: {
-                        taskVM.addTasks(from: newTask)
+                        taskVM.addTask(from: newTask)
                         newTask = ""
                     })
                 }
@@ -63,16 +62,3 @@ struct TaskListView: View {
     }
 }
 
-
-
-#Preview {
-    let container = try! ModelContainer(
-        for: ModelTask.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
-    let taskVM = TaskViewModel(context: container.mainContext)
-
-    TaskListView()
-        .modelContainer(container)
-        .environmentObject(taskVM)
-}

@@ -16,7 +16,7 @@ struct CustomTabView: View {
     @Environment(\.colorScheme) private var scheme
     @State private var tabProgress: CGFloat = 0
     
-    @Binding var selectedTasks: Set<String>
+    @Binding var selectedTasks: Set<UUID>
     @Binding var isSelected: Bool
     
     
@@ -101,7 +101,7 @@ struct CustomTabView: View {
     let taskVM = TaskViewModel(context: container.mainContext)
 
     CustomTabView(
-        selectedTasks: .constant(Set<String>()),
+        selectedTasks: .constant(Set<UUID>()),
         isSelected: .constant(false))
         .modelContainer(container)
         .environmentObject(taskVM)

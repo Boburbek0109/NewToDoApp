@@ -42,7 +42,7 @@ final class TaskViewModel: ObservableObject {
         }
     }
     
-    func addTasks(from text: String) {
+    func addTask(from text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         

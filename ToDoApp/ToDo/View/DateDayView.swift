@@ -13,6 +13,7 @@ struct DataDayView: View {
     @State private var calendarStats = CalendarStats.empty
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    
     let columns1 = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
