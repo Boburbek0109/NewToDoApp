@@ -14,8 +14,6 @@ struct DataDayView: View {
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
-    let columns1 = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    
     var body: some View {
         LazyVGrid(columns: columns) {
             ZStack {
@@ -55,7 +53,7 @@ struct DataDayView: View {
                             .opacity(0.55)
                     }
                     
-                    LazyVGrid(columns: columns1) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                         ForEach(1...calendarStats.daysInCurrentMonth, id: \.self) { day in
                             Circle()
                                 .frame(width: 10, height: 10)
