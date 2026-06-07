@@ -43,13 +43,16 @@ struct CustomTabView: View {
                             tabProgress = max(min(progress, 1), 0)
                         }
                     }
-                    
                     .scrollPosition(id: $selectedTab)
                     .scrollIndicators(.hidden)
                     .scrollTargetBehavior(.paging)
                     .scrollClipDisabled()
                 }
                 .background(.gray.opacity(0.1))
+            }
+            .onChange(of: selectedTab){
+                selectedTasks.removeAll()
+                isSelected = false
             }
         }
     

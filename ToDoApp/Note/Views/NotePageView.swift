@@ -40,7 +40,7 @@ struct NotePageView: View {
             VStack(spacing: 8) {
                 Text("Note your ideas...")
                     .font(.headline)
-                Text("Tap + to add a new notes")
+                Text("Tap + to add a new note")
                     .font(.headline)
                     .foregroundStyle(.secondary)
             }

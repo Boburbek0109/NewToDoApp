@@ -19,8 +19,8 @@ struct CalendarPlanListView: View {
             
             if plans.isEmpty {
                 VStack(alignment: .leading){
-                    Text("No tasks for this day.")
-                    Text("Tap to + for add your plans")
+                    Text("No plans for this day.")
+                    Text("Tap + to add a plan")
                 }
                 .font(.title2)
                 .frame(height: 55)

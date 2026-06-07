@@ -79,10 +79,15 @@ final class NoteViewModel: ObservableObject {
     }
     
     func loadCategories() {
-        let description = FetchDescriptor<NoteCategory>(
+        let descriptor = FetchDescriptor<NoteCategory>(
             sortBy: [SortDescriptor(\.createdAt, order: .forward)]
         )
-        categories = (try? noteContext.fetch(description)) ?? []
+        
+        do {
+            categories = try noteContext.fetch(descriptor)
+        } catch {
+            print("Failed to load note categories: \(error)")
+        }
     }
     
     

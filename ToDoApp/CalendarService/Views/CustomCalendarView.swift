@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-enum PlanEditorMode: Identifiable{
+private enum PlanEditorMode: Identifiable{
     case create
     case edit(CalendarPlan)
     

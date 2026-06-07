@@ -27,6 +27,8 @@ enum PersistenceController {
             return try ModelContainer(for: schema, configurations: [configuration])
         } catch {
             print("Failed to load SwiftData store at \(storeURL.path): \(error)")
+            
+            #if DEBUG
             removeStoreFiles(at: storeURL)
 
             do {
@@ -34,6 +36,10 @@ enum PersistenceController {
             } catch {
                 fatalError("Unrecoverable SwiftData error: \(error)")
             }
+            #else
+            fatalError("Failed to load SwiftData store: \(error)")
+            #endif
+            
         }
     }
 

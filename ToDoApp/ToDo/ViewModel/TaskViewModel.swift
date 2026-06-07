@@ -31,7 +31,12 @@ final class TaskViewModel: ObservableObject {
         let descriptor =  FetchDescriptor<ModelTask>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
-        tasks = (try? context.fetch(descriptor)) ?? []
+        
+        do {
+            tasks = try context.fetch(descriptor)
+        } catch {
+            print("Failed to load task: \(error)")
+        }
     }
     
     func saveTasks() {

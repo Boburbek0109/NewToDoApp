@@ -19,7 +19,7 @@ struct CalendarHeaderView: View {
         HStack{
             Button(action: {
                 currentDate = manager.previousMonth(from: currentDate)
-                selectedDate = nil
+                selectedDate = currentDate
             }) { Image(systemName: "chevron.left") }
             
             Spacer()
@@ -32,7 +32,7 @@ struct CalendarHeaderView: View {
             
             Button(action: {
                 currentDate = manager.nextMonth(from: currentDate)
-                selectedDate = nil
+                selectedDate = currentDate
             }) { Image(systemName: "chevron.right") }
         }
         .tint(.primary)

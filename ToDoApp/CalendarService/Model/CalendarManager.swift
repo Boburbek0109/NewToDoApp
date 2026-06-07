@@ -31,7 +31,15 @@ struct CalendarManager {
               let lastWeek = calendar.dateInterval(of: .weekOfMonth, for: monthInterval.end - 1)
                 
         else { return [] }
-        return stride(from: firstWeek.start, to: lastWeek.end, by: 86400).map {$0}
+        
+        var days: [Date] = []
+        var currentDate = firstWeek.start
+        
+        while currentDate < lastWeek.end{
+            days.append(currentDate)
+            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+        }
+        return days
     }
     
     func nextMonth(from date: Date) -> Date {

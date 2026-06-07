@@ -87,10 +87,7 @@ struct CalendarPlanEditorView: View{
                         dismiss()
                         
                     }
-                    .disabled(
-                        titlePlan.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-                        contentPlan.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    )
+                    .disabled(titlePlan.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
         }

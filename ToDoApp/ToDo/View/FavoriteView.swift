@@ -14,7 +14,7 @@ struct FavoriteView: View {
     var body: some View{
         List{
             if taskVM.favoriteTasks.isEmpty{
-                Text("No favorite task yet")
+                Text("No favorite tasks yet")
                     .foregroundStyle(Color.secondary)
             } else {
                 ForEach(taskVM.favoriteTasks) { text in
