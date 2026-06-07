@@ -41,7 +41,9 @@ struct NoteCategoryPagerView: View {
     var body: some View {
             VStack(spacing: 15){
                 
-                noteTabView
+                if !noteVM.notes.isEmpty {
+                    noteTabView
+                }
                 
                 GeometryReader{ proxy in
                     let size = proxy.size

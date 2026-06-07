@@ -38,7 +38,7 @@ struct NotePageView: View {
         
         if filteredNotes.isEmpty{
             VStack(spacing: 8) {
-                Text("Write something...")
+                Text("Note your ideas...")
                     .font(.headline)
                 Text("Tap + to add a new notes")
                     .font(.headline)

@@ -47,7 +47,7 @@ struct QuickNote: View {
 
 #Preview {
     let noteContext = try! ModelContainer(
-        for: ModelNote.self,
+        for: ModelNote.self, NoteCategory.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let noteVM = NoteViewModel(noteContext: noteContext.mainContext)

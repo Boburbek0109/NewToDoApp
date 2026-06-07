@@ -10,6 +10,7 @@ import SwiftUI
 struct NoteEditorView: View{
     
     @EnvironmentObject var noteVM: NoteViewModel
+    @Environment(\.dismiss) private var dismiss
     
     private let notes: ModelNote?
     @State private var title = ""
@@ -47,6 +48,8 @@ struct NoteEditorView: View{
                         } else {
                             noteVM.addNote(title: title, content: content)
                         }
+                        
+                        dismiss()
                     }
                     .disabled(
                         title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&

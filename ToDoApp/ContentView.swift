@@ -30,7 +30,6 @@ struct ContentView: View {
                             Label("Favorites", systemImage: "star.fill")
                                 .foregroundStyle(.black)
                                 .font(.title)
-                            
                         }
                 }
                 
@@ -78,15 +77,16 @@ struct ContentView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: ModelTask.self, ModelNote.self,
-        
+        for: ModelTask.self, ModelNote.self, NoteCategory.self, CalendarPlan.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let taskVM = TaskViewModel(context: container.mainContext)
     let noteVM = NoteViewModel(noteContext: container.mainContext)
+    let calendarVM = CalendarPlanViewModel(calendarContext: container.mainContext)
     
     ContentView()
         .modelContainer(container)
         .environmentObject(taskVM)
         .environmentObject(noteVM)
+        .environmentObject(calendarVM)
 }

@@ -16,7 +16,9 @@ enum PersistenceController {
         let schema = Schema([
             ModelTask.self,
             ModelNote.self,
-            NoteCategory.self])
+            NoteCategory.self,
+            CalendarPlan.self
+        ])
         
         let storeURL = makeStoreURL()
         let configuration = ModelConfiguration("ToDo", schema: schema, url: storeURL)

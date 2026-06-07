@@ -14,12 +14,14 @@ struct ToDoApp: App {
     private var container: ModelContainer
     @StateObject private var taskVM: TaskViewModel
     @StateObject private var noteVM: NoteViewModel
+    @StateObject private var calendarVM: CalendarPlanViewModel
     
     init() {
         let container = PersistenceController.makeContainer()
         self.container = container
         _taskVM = StateObject(wrappedValue: TaskViewModel(context: container.mainContext))
         _noteVM = StateObject(wrappedValue: NoteViewModel(noteContext: container.mainContext))
+        _calendarVM = StateObject(wrappedValue: CalendarPlanViewModel(calendarContext: container.mainContext))
     }
     
     var body: some Scene {
@@ -27,6 +29,8 @@ struct ToDoApp: App {
             ContentView()
                 .environmentObject(taskVM)
                 .environmentObject(noteVM)
+                .environmentObject(calendarVM)
+            
         }
         .modelContainer(container)
     }

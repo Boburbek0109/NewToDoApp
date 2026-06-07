@@ -69,4 +69,12 @@ struct CalendarManager {
     func monthYearString(from date: Date) -> String {
         monthYearFormatter.string(from: date)
     }
+    
+    func isDay(_ day: Date, inside plan: CalendarPlan) -> Bool {
+        let day = calendar.startOfDay(for: day)
+        let startDate = calendar.startOfDay(for: plan.startDate)
+        let endDate = calendar.startOfDay(for: plan.endDate)
+        
+        return day >= startDate && day <= endDate
+    }
 }

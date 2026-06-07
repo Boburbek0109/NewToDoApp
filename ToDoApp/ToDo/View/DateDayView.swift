@@ -16,26 +16,32 @@ struct DataDayView: View {
     
     var body: some View {
         LazyVGrid(columns: columns) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 30)
-                    .frame(width: 180, height: 180)
-                    .foregroundStyle(.gray.opacity(0.4))
-                
-                VStack {
-                    HStack {
-                        Text("\(Date().formatted(.dateTime.weekday()))")
-                            .font(.title3)
-                            .bold()
-                        
-                        Text("\(Date().formatted(.dateTime.month()))")
-                            .font(.title2)
-                            .opacity(0.55)
-                    }
+            NavigationLink{
+                CustomCalendarView()
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 30)
+                        .frame(width: 180, height: 180)
+                        .foregroundStyle(.gray.opacity(0.4))
                     
-                    Text("\(Date().formatted(.dateTime.day()))")
-                        .font(.system(size: 100, weight: .bold))
+                    VStack {
+                        HStack {
+                            Text("\(Date().formatted(.dateTime.weekday()))")
+                                .font(.title3)
+                                .bold()
+                            
+                            Text("\(Date().formatted(.dateTime.month()))")
+                                .font(.title2)
+                                .opacity(0.55)
+                        }
+                        
+                        Text("\(Date().formatted(.dateTime.day()))")
+                            .font(.system(size: 100, weight: .bold))
+                    }
                 }
+                .foregroundStyle(.black)
             }
+            .buttonStyle(.plain)
             
             ZStack {
                 RoundedRectangle(cornerRadius: 30)
@@ -53,7 +59,7 @@ struct DataDayView: View {
                             .opacity(0.55)
                     }
                     
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6)) {
                         ForEach(1...calendarStats.daysInCurrentMonth, id: \.self) { day in
                             Circle()
                                 .frame(width: 10, height: 10)
