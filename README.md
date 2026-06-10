@@ -9,10 +9,10 @@ This project was built to practice SwiftUI app architecture, SwiftData persisten
 Add app screenshots here after uploading them to the `Screenshots` folder.
 
 <p align="center">
-  <img src="Screenshots/screenshot-1.png" width="220">
-  <img src="Screenshots/screenshot-2.png" width="220">
-  <img src="Screenshots/screenshot-3.png" width="220">
-  <img src="Screenshots/screenshot-4.png" width="220">
+  <img src="Screenshots/home.png" width="220">
+  <img src="Screenshots/calendar.png" width="220">
+  <img src="Screenshots/tasks.png" width="220">
+  <img src="Screenshots/notes.png" width="220">
 </p>
 
 ## Features
