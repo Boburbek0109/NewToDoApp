@@ -123,4 +123,7 @@ Helpful resources:
 - https://www.hackingwithswift.com/quick-start/swiftdata/how-to-use-mvvm-to-separate-swiftdata-from-your-views
 - https://www.youtube.com/@seanallen
 - https://www.youtube.com/@SwiftfulThinking
+- https://stackoverflow.com/questions/76493800/swift-ui-calendar-without-packages
+- https://github.com/HappyIosDeveloper/SwiftUI-TagView/blob/main/README.md
+- https://github.com/zinkxx/devnotes/blob/main/README.md
 - AI tools were also used as a learning assistant for debugging, code review, and understanding Swift concepts.
