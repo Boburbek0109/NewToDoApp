@@ -13,14 +13,13 @@ struct QuickNote: View {
     
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var noteVM: NoteViewModel
-    
-    @State private var inputText = ""
+
     @State private var showNewNote = false
 
     var body: some View {
             ZStack(alignment: .bottomTrailing) {
                 VStack{
-                    NoteCategoryPagerView(searchText: inputText)
+                    NoteCategoryPagerView(searchText: noteVM.debouncedSearchText)
                 }
                 Button( action: {
                     showNewNote = true
@@ -37,7 +36,7 @@ struct QuickNote: View {
                 
             }
             .navigationTitle("Notes")
-            .searchable(text: $inputText, placement: .navigationBarDrawer(displayMode: .always))
+            .searchable(text: $noteVM.inputText, placement: .navigationBarDrawer(displayMode: .always))
             .sheet(isPresented: $showNewNote) {
                 NoteEditorView()
             }

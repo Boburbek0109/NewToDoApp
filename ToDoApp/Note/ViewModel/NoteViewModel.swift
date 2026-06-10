@@ -15,10 +15,23 @@ final class NoteViewModel: ObservableObject {
     @Published private(set) var notes: [ModelNote] = []
     @Published private(set) var categories: [NoteCategory] = []
     
+    @Published var inputText = ""
+    @Published private(set) var debouncedSearchText = ""
+    
     private var noteContext: ModelContext
+    private var cancellables = Set<AnyCancellable>()
     
     init(noteContext: ModelContext) {
         self.noteContext = noteContext
+
+        $inputText
+            .debounce(for: .milliseconds(400), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] text in
+                self?.debouncedSearchText = text
+            }
+            .store(in: &cancellables)
+
         loadNotes()
         loadCategories()
     }
@@ -27,7 +40,11 @@ final class NoteViewModel: ObservableObject {
         let descriptor = FetchDescriptor<ModelNote>(
             sortBy: [SortDescriptor(\.modifiedAt, order: .reverse)]
         )
-        notes = (try? noteContext.fetch(descriptor)) ?? []
+        do {
+            notes = try noteContext.fetch(descriptor)
+        } catch {
+            print("Failed to load notes: \(error)")
+        }
     }
     
     func saveNotes() {
