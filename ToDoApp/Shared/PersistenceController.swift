@@ -8,11 +8,19 @@
 import Foundation
 import SwiftData
 
+enum PersistenceError: LocalizedError{
+    case applicationSupportUnavailable
+    
+    var errorDescription: String? {
+        switch self {
+        case .applicationSupportUnavailable:
+            return "The app couldn’t access its data folder. Please try again."
+        }
+    }
+}
 
 enum PersistenceController {
-    
-    static func makeContainer() -> ModelContainer {
-        
+    static func makeContainer() throws -> ModelContainer {
         let schema = Schema([
             ModelTask.self,
             ModelNote.self,
@@ -20,7 +28,7 @@ enum PersistenceController {
             CalendarPlan.self
         ])
         
-        let storeURL = makeStoreURL()
+        let storeURL = try makeStoreURL()
         let configuration = ModelConfiguration("ToDo", schema: schema, url: storeURL)
 
         do {
@@ -28,44 +36,16 @@ enum PersistenceController {
         } catch {
             print("Failed to load SwiftData store at \(storeURL.path): \(error)")
             
-            #if DEBUG
-            removeStoreFiles(at: storeURL)
-
-            do {
-                return try ModelContainer(for: schema, configurations: [configuration])
-            } catch {
-                fatalError("Unrecoverable SwiftData error: \(error)")
-            }
-            #else
-            fatalError("Failed to load SwiftData store: \(error)")
-            #endif
-            
+            throw error
         }
     }
 
-    private static func makeStoreURL() -> URL {
-        let appSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-
-        do {
-            try FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
-        } catch {
-            print("Failed to create Application Support directory: \(error)")
-        }
-
+    private static func makeStoreURL() throws -> URL {
+        guard let appSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            throw PersistenceError.applicationSupportUnavailable }
+        
+        try FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
+        
         return appSupportURL.appendingPathComponent("ToDo.store")
-    }
-
-    private static func removeStoreFiles(at storeURL: URL) {
-        let fileManager = FileManager.default
-        let basePath = storeURL.path
-        let pathsToRemove = [basePath, "\(basePath)-shm", "\(basePath)-wal"]
-
-        for path in pathsToRemove where fileManager.fileExists(atPath: path) {
-            do {
-                try fileManager.removeItem(atPath: path)
-            } catch {
-                print("Failed to remove store file at \(path): \(error)")
-            }
-        }
     }
 }

@@ -13,11 +13,11 @@ import Combine
 final class TaskViewModel: ObservableObject {
     
     @Published private(set) var tasks: [ModelTask] = []
+    @Published private(set) var loadErrorMessage: String?
     
     var favoriteTasks: [ModelTask] {
         tasks.filter { $0.isFavorite }
     }
-    
     
     private let context: ModelContext
     
@@ -26,56 +26,98 @@ final class TaskViewModel: ObservableObject {
         loadTasks()
     }
     
-    
     func loadTasks() {
         let descriptor =  FetchDescriptor<ModelTask>(
-            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
-        )
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)])
         
         do {
             tasks = try context.fetch(descriptor)
+            loadErrorMessage = nil
         } catch {
-            print("Failed to load task: \(error)")
+            loadErrorMessage = error.localizedDescription
         }
     }
     
-    func saveTasks() {
-        do {
-            try context.save()
-        } catch {
-            print("Cant save task \(error)")
-        }
-    }
-    
-    func addTask(from text: String) {
+    func addTask(from text: String) throws {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
+        let operationContext = ModelContext(context.container)
+        operationContext.autosaveEnabled = false
         let task = ModelTask(title: trimmed)
-        context.insert(task)
-        persistChanges()
+        operationContext.insert(task)
+        try operationContext.save()
+        loadTasks()
     }
     
-    
-    func toggleDone(at task: ModelTask) {
-        task.isDone.toggle()
-        persistChanges()
+    func toggleDone(at task: ModelTask) throws {
+        let operationContext = ModelContext(context.container)
+        operationContext.autosaveEnabled = false
+        let taskID = task.id
+        let predicate = #Predicate<ModelTask> { candidate in
+            candidate.id == taskID }
+        let descriptor =  FetchDescriptor<ModelTask> ( predicate: predicate )
+        let matchingTasks = try operationContext.fetch(descriptor)
+        guard let operationTask = matchingTasks.first else { throw TaskOperationError.taskNotFound }
+        operationTask.isDone.toggle()
+        try operationContext.save()
+        
+        loadTasks()
     }
     
-    
-    func toggleFavorite(for task: ModelTask) {
-        task.isFavorite.toggle()
-        persistChanges()
+    func toggleFavorite(for task: ModelTask) throws {
+        
+        let operationContext = ModelContext(context.container)
+        operationContext.autosaveEnabled = false
+        let taskID = task.id
+        let predicate = #Predicate<ModelTask> { candidate in
+            candidate.id == taskID }
+        let descriptor =  FetchDescriptor<ModelTask> ( predicate: predicate )
+        let matchingTasks = try operationContext.fetch(descriptor)
+        guard let operationTask = matchingTasks.first else { throw TaskOperationError.taskNotFound }
+        operationTask.isFavorite.toggle()
+        try operationContext.save()
+        
+        loadTasks()
     }
     
-    func deleteTasks(_ tasksToDelete: [ModelTask]) {
-        for task in tasksToDelete{
-            context.delete(task)
+    func addToFavorites(for tasksToFavorite: [ModelTask]) throws {
+        
+        let operationContext = ModelContext(context.container)
+        operationContext.autosaveEnabled = false
+        
+        for task in tasksToFavorite {
+            let taskID = task.id
+            let predicate = #Predicate<ModelTask> { candidate in
+                candidate.id == taskID }
+            let descriptor =  FetchDescriptor<ModelTask> ( predicate: predicate )
+            let matchingTasks = try operationContext.fetch(descriptor)
+            guard let operationTask = matchingTasks.first else { throw TaskOperationError.taskNotFound }
+            operationTask.isFavorite = true
         }
-        persistChanges()
+        try operationContext.save()
+        loadTasks()
     }
     
-    func visibleTasks (for tab: TabModel) -> [ModelTask] {
+    func deleteTasks(_ tasksToDelete: [ModelTask]) throws {
+        
+        let operationContext = ModelContext(context.container)
+        operationContext.autosaveEnabled = false
+        
+        for task in tasksToDelete{
+            let taskID = task.id
+            let predicate = #Predicate<ModelTask> { candidate in
+                candidate.id == taskID }
+            let descriptor =  FetchDescriptor<ModelTask> ( predicate: predicate )
+            let matchingTasks = try operationContext.fetch(descriptor)
+            guard let operationTask = matchingTasks.first else { throw TaskOperationError.taskNotFound }
+            operationContext.delete(operationTask)
+        }
+        try operationContext.save()
+        loadTasks()
+    }
+    
+    func visibleTasks(for tab: TabModel) -> [ModelTask] {
         switch tab {
         case .all:
             return tasks
@@ -89,18 +131,23 @@ final class TaskViewModel: ObservableObject {
     func emptyText(for tab: TabModel) -> String {
         switch tab {
         case .all:
-            return "Don't have any tasks today"
+            return "Your list starts here"
         case .active:
-            return "No active tasks"
+            return "Nothing to do right now"
         case .completed:
-            return "No completed tasks"
+            return "No completed tasks yet"
         }
     }
     
-    private func persistChanges(){
-        saveTasks()
-        loadTasks()
+}
+
+enum TaskOperationError: LocalizedError {
+    case taskNotFound
+    
+    var errorDescription: String? {
+        switch self {
+        case .taskNotFound:
+            return "This task could not be found. Reload the list and try again."
+        }
     }
-    
-    
 }

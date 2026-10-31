@@ -48,7 +48,6 @@ struct CustomTabView: View {
                     .scrollTargetBehavior(.paging)
                     .scrollClipDisabled()
                 }
-                .background(.gray.opacity(0.1))
             }
             .onChange(of: selectedTab){
                 selectedTasks.removeAll()

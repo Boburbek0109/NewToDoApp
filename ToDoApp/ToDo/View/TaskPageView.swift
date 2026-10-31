@@ -11,53 +11,62 @@ struct TaskPageView: View{
     
     @EnvironmentObject var taskVM: TaskViewModel
     
+    @State private var errorMessage: String?
+    @State private var showError = false
     let tab: TabModel
     @Binding var selectedTasks: Set<UUID>
     @Binding var isSelected: Bool
     
     var body: some View{
         List {
-            if taskVM.visibleTasks(for: tab).isEmpty{
-                Text(taskVM.emptyText(for: tab))
-                    .foregroundStyle(Color.secondary)
-            } else {
-                ForEach(taskVM.visibleTasks(for: tab), id: \.id) { iList in
-                    HStack {
-                        if isSelected {
+            ForEach(taskVM.visibleTasks(for: tab), id: \.id) { iList in
+                HStack {
+                    if isSelected {
+                        Text(iList.title)
+                    } else {
+                        Label {
                             Text(iList.title)
-                                .lineLimit(1)
-                        } else {
-                            Label {
-                                Text(iList.title)
-                                    .lineLimit(1)
-                            } icon: {
-                                Image(systemName: iList.isDone ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(iList.isDone ? .green : .red)
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        if isSelected {
-                            Image(systemName: selectedTasks.contains(iList.id) ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(selectedTasks.contains(iList.id) ? Color.accentColor : Color.secondary)
+                        } icon: {
+                            Image(systemName: iList.isDone ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(iList.isDone ? .green : .red)
                         }
                     }
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.18)){
-                            if isSelected{
-                                if selectedTasks.contains(iList.id){
-                                    selectedTasks.remove(iList.id)
-                                } else {
-                                    selectedTasks.insert(iList.id)
-                                }
+                    
+                    Spacer()
+                    
+                    if isSelected {
+                        Image(systemName: selectedTasks.contains(iList.id) ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(selectedTasks.contains(iList.id) ? Color.accentColor : Color.secondary)
+                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation(.easeInOut(duration: 0.18)){
+                        if isSelected{
+                            if selectedTasks.contains(iList.id){
+                                selectedTasks.remove(iList.id)
                             } else {
-                                taskVM.toggleDone(at: iList)
+                                selectedTasks.insert(iList.id)
+                            }
+                        } else {
+                            do {
+                                try taskVM.toggleDone(at: iList)
+                                errorMessage = nil
+                            } catch {
+                                errorMessage = error.localizedDescription
+                                showError = true
                             }
                         }
                     }
                 }
-                
+            }
+        }
+        .overlay{
+            if taskVM.visibleTasks(for: tab).isEmpty && taskVM.loadErrorMessage == nil {
+                ContentUnavailableView(
+                    taskVM.emptyText(for: tab),
+                    systemImage: "checklist",
+                    description: tab == .all ? Text("Tap + to add your first task.") : nil)
             }
         }
         .scrollContentBackground(.hidden)
@@ -82,6 +91,9 @@ struct TaskPageView: View{
                 .background(.bar)
             }
         }
+        .alert(isPresented: $showError) {
+            Alert(title: Text("Couldn’t save changes"), message: Text(errorMessage ?? "Please try again"))
+        }
     }
     
     private var selectedVisibleTasks: [ModelTask] {
@@ -89,18 +101,26 @@ struct TaskPageView: View{
     }
     
     private func favoriteSelectedTasks() {
-        selectedVisibleTasks.forEach { task in
-            if !task.isFavorite {
-                taskVM.toggleFavorite(for: task)
-            }
+        do {
+            try taskVM.addToFavorites(for: selectedVisibleTasks)
+            selectedTasks.removeAll()
+            isSelected = false
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
         }
-        selectedTasks.removeAll()
-        isSelected = false
     }
     
     private func deleteSelectedTasks() {
-        taskVM.deleteTasks(selectedVisibleTasks)
-        selectedTasks.removeAll()
-        isSelected = false
+        do {
+            try taskVM.deleteTasks(selectedVisibleTasks)
+            selectedTasks.removeAll()
+            isSelected = false
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
     }
 }
