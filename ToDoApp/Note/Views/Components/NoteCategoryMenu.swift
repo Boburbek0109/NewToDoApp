@@ -11,12 +11,17 @@ struct NoteCategoryMenu: View {
     @EnvironmentObject var noteVM: NoteViewModel
     
     let notes: ModelNote
+    let onAssignmentError: () -> Void
     
     var body: some View {
         Section("Color"){
             ForEach(NoteCategoryColor.availableKeys, id: \.self){ colorKey in
                 Button{
-                    noteVM.assignColor(colorKey, to: notes)
+                    do {
+                        try noteVM.assignColor(colorKey, to: notes)
+                    } catch {
+                        onAssignmentError()
+                    }
                 } label: {
                     HStack{
                         Circle()

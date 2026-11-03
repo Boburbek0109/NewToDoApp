@@ -29,7 +29,8 @@ struct NoteRow: View {
                 .foregroundStyle(.secondary)
         }
         .padding(10)
-        .frame(width: 180, height: 180, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .frame(height: 180, alignment: .topLeading)
         .background{
             RoundedRectangle(cornerRadius: 12)
                 .fill(NoteCategoryColor.color(for: notes.category?.colorKey ?? "").opacity(0.25))
@@ -40,7 +41,6 @@ struct NoteRow: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.gray, lineWidth: 2)
         }
-        .padding(5)
     }
 }
 

@@ -13,15 +13,13 @@ enum NoteTab: Hashable{
 }
 
 struct NoteCategoryPagerView: View {
-    
     @EnvironmentObject var noteVM: NoteViewModel
-    @Environment(\.colorScheme) private var scheme
     
     @State private var selectedTab: NoteTab? = .all
-    @State private var tabProgress: CGFloat = 0
     @State private var editingCategory: NoteCategory?
     @State private var editingName = ""
     @State private var showRenameAlert = false
+    @State private var showRenameError = false
      
     let searchText: String
     
@@ -30,42 +28,25 @@ struct NoteCategoryPagerView: View {
     }
     
     private func tabID(for category: NoteCategory?) -> NoteTab {
-        if let category{
-            return .category(category.id)
-        }
-        
+        if let category { return .category(category.id) }
         return .all
     }
     
-    
     var body: some View {
             VStack(spacing: 15){
+                if !noteVM.notes.isEmpty { noteTabView }
                 
-                if !noteVM.notes.isEmpty {
-                    noteTabView
-                }
-                
-                GeometryReader{ proxy in
-                    let size = proxy.size
-                    
+                GeometryReader{ _ in
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 0){
-                            ForEach(Array(noteTabs.enumerated()), id: \.offset){ _, category in
+                            ForEach(Array(noteTabs.enumerated()), id: \.element?.id){ _, category in
                                 NotePageView(searchText: searchText, category: category)
-
                                     .id(tabID(for: category))
                                     .containerRelativeFrame(.horizontal)
                             }
                         }
                         .scrollTargetLayout()
-                        .offsetX { value in
-                            let count = max(noteTabs.count - 1, 1)
-                            let progress = -value / (size.width * CGFloat(count))
-                            
-                            tabProgress = max(min(progress, 1), 0)
-                        }
                     }
-                    
                     .scrollPosition(id: $selectedTab)
                     .scrollIndicators(.hidden)
                     .scrollTargetBehavior(.paging)
@@ -76,19 +57,25 @@ struct NoteCategoryPagerView: View {
                     
                     Button("Save"){
                         guard let editingCategory else { return }
-                        noteVM.renameCategory(editingCategory, name: editingName)
+                        do {
+                            try noteVM.renameCategory(editingCategory, name: editingName)
+                        } catch {
+                            showRenameError = true
+                        }
                     }
                     
                     Button("Cancel", role: .cancel) { }
                 }
             }
+            .alert("Couldn’t rename category", isPresented: $showRenameError) {
+                Button("OK") { }
+            } message: { Text("The category name hasn’t changed. Please try again.") }
         }
-    
     
     private var noteTabView: some View {
         ScrollView(.horizontal, showsIndicators: false){
-            HStack(spacing: 6){
-                ForEach(Array(noteTabs.enumerated()), id: \.offset){ _, category in
+            HStack(spacing: 8){
+                ForEach(Array(noteTabs.enumerated()), id: \.element?.id){ _, category in
                     
                     let isSelected = selectedTab == tabID(for: category)
                     
@@ -97,17 +84,10 @@ struct NoteCategoryPagerView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(minWidth: 44, maxWidth: 120)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 7)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
                         .foregroundStyle(isSelected ? .primary : .secondary)
-                        .background{
-                            if isSelected {
-                                Capsule()
-                                    .fill(scheme == .dark ? .black : .white)
-                                    .shadow(color: .black.opacity(0.12),radius: 8, x: 0, y:3)
-                            }
-                        }
-                        .background(.gray.opacity(0.1), in: .capsule)
+                        .glassEffect(isSelected ? .regular : .identity)
                         .onTapGesture {
                             withAnimation(.snappy) {
                                 selectedTab = tabID(for: category)
@@ -121,9 +101,10 @@ struct NoteCategoryPagerView: View {
                         }
                 }
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
+            .background(.gray.opacity(0.1), in: .capsule)
         }
-
     }
 }
 

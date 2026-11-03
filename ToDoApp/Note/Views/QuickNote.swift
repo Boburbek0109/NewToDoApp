@@ -10,17 +10,37 @@ import SwiftData
 
 
 struct QuickNote: View {
-    
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var noteVM: NoteViewModel
 
     @State private var showNewNote = false
+    @State private var isSearchPresented = false
 
     var body: some View {
-            ZStack(alignment: .bottomTrailing) {
-                VStack{
-                    NoteCategoryPagerView(searchText: noteVM.debouncedSearchText)
+        ZStack(alignment: .bottomTrailing) {
+            VStack{
+                if let message = noteVM.notesLoadErrorMessage {
+                    Text(message)
+                    Button("Retry") {
+                        noteVM.loadNotes()
+                    }
                 }
+                if let categoryMessage = noteVM.categoriesLoadErrorMessage {
+                    Text(categoryMessage)
+                    Button("Retry") {
+                        noteVM.loadCategories()
+                    }
+                }
+                if noteVM.notesLoadErrorMessage == nil || !noteVM.notes.isEmpty {
+                    if noteVM.notes.isEmpty {
+                        NoteCategoryPagerView(searchText: noteVM.debouncedSearchText)
+                    } else {
+                        NoteCategoryPagerView(searchText: noteVM.debouncedSearchText)
+                            .searchable(text: $noteVM.inputText, isPresented: $isSearchPresented, placement: .toolbar)
+                            .searchToolbarBehavior(.minimize)
+                    }
+                }
+            }
+            if !isSearchPresented {
                 Button( action: {
                     showNewNote = true
                 }) {
@@ -33,14 +53,26 @@ struct QuickNote: View {
                         .shadow(radius: 5)
                 }
                 .padding()
-                
             }
-            .navigationTitle("Notes")
-            .searchable(text: $noteVM.inputText, placement: .navigationBarDrawer(displayMode: .always))
-            .sheet(isPresented: $showNewNote) {
+        }
+        .navigationTitle("Notes")
+        .toolbar{
+            if noteVM.notes.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Search", systemImage: "magnifyingglass") {
+                        isSearchPresented = true
+                    }
+                    .disabled(noteVM.notes.isEmpty)
+                }
+            } else {
+                DefaultToolbarItem(kind: .search, placement: .topBarTrailing)
+            }
+        }
+        .sheet(isPresented: $showNewNote) {
+            NavigationStack{
                 NoteEditorView()
             }
-        
+        }
     }
 }
 
