@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct DataDayView: View {
-    
+    @Environment(\.scenePhase) private var scenePhase
     let manager = CalendarService.instance
     @State private var calendarStats = CalendarStats.empty
+    @State private var referenceDate = Date()
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -21,59 +22,69 @@ struct DataDayView: View {
             } label: {
                 ZStack {
                     RoundedRectangle(cornerRadius: 30)
-                        .frame(width: 180, height: 180)
-                        .foregroundStyle(.gray.opacity(0.4))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 180)
+                        .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
                     
                     VStack {
                         HStack {
-                            Text("\(Date().formatted(.dateTime.weekday()))")
+                            Text("\(referenceDate.formatted(.dateTime.weekday()))")
                                 .font(.title3)
                                 .bold()
                             
-                            Text("\(Date().formatted(.dateTime.month()))")
+                            Text("\(referenceDate.formatted(.dateTime.month()))")
                                 .font(.title2)
                                 .opacity(0.55)
                         }
                         
-                        Text("\(Date().formatted(.dateTime.day()))")
+                        Text("\(referenceDate.formatted(.dateTime.day()))")
                             .font(.system(size: 100, weight: .bold))
                     }
                 }
-                .foregroundStyle(.black)
+                .foregroundStyle(.primary)
             }
             .buttonStyle(.plain)
             
             ZStack {
                 RoundedRectangle(cornerRadius: 30)
-                    .frame(width: 180, height: 180)
-                    .foregroundStyle(.gray.opacity(0.4))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 180)
+                    .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
                 
                 VStack {
-                    HStack(spacing: 65) {
-                        Text("Days")
-                            .font(.title2)
+                    HStack {
+                        Text("This Month")
+                            .font(.headline)
                             .bold()
                         
+                        Spacer()
+                        
                         Text("\(Int(calendarStats.percent))%")
-                            .font(.title2)
+                            .font(.headline)
                             .opacity(0.55)
                     }
-                    
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6)) {
                         ForEach(1...calendarStats.daysInCurrentMonth, id: \.self) { day in
                             Circle()
                                 .frame(width: 10, height: 10)
-                                .foregroundStyle(day <= calendarStats.currentDay ? .black : .gray)
+                                .foregroundStyle(day <= calendarStats.currentDay ? Color.primary : Color.secondary)
                         }
                     }
                 }
+                .padding(16)
             }
         }
-        .task {
-            calendarStats = await manager.stats()
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+            while !Task.isCancelled {
+                referenceDate = Date()
+                calendarStats = await manager.stats(referenceDate: referenceDate)
+                guard let nextMidnight = await manager.nextMidnight(referenceDate: referenceDate) else { return }
+                let secondsUntilMidnight = nextMidnight.timeIntervalSince(Date())
+                do{ try await Task.sleep(for: .seconds(secondsUntilMidnight))
+                } catch { return }
+            }
         }
-        
-        
     }
 }
 

@@ -9,47 +9,54 @@ import Foundation
 
 struct CalendarManager {
     
-    let calendar = Calendar.current
+    let calendar: Calendar
+    init(calendar: Calendar = Calendar.current){
+        self.calendar = calendar
+        monthYearFormatter.locale = calendar.locale ?? .current
+        monthYearFormatter.calendar = calendar
+        monthYearFormatter.timeZone = calendar.timeZone
+    }
     
-    func todayWeekdayIndex() -> Int {
-        let originalIndex = calendar.component(.weekday, from: Date()) - 1
-        return (originalIndex + 6) % 7
+    func todayWeekdayIndex(referenceDate: Date = Date()) -> Int {
+        let originalIndex = calendar.component(.weekday, from: referenceDate) - 1
+        return (originalIndex)
     }
     
     func  weekdays() -> [String] {
         let symbol = calendar.shortStandaloneWeekdaySymbols
-        return Array(symbol[1...6] + [symbol[0]])
+        let firstIndex = calendar.firstWeekday - 1
+        return Array(symbol[firstIndex...] + symbol[..<firstIndex])
     }
     
-    func todayWeeknd() -> String {
-        weekdays()[todayWeekdayIndex()]
+    func todayWeeknd(referenceDate: Date = Date()) -> String {
+        calendar.shortStandaloneWeekdaySymbols[todayWeekdayIndex(referenceDate: referenceDate)]
     }
     
     func generateMonthGrid(for date: Date) -> [Date]{
         guard let monthInterval = calendar.dateInterval(of: .month, for: date),
               let firstWeek = calendar.dateInterval(of: .weekOfMonth, for: monthInterval.start),
               let lastWeek = calendar.dateInterval(of: .weekOfMonth, for: monthInterval.end - 1)
-                
         else { return [] }
         
         var days: [Date] = []
         var currentDate = firstWeek.start
         
-        while currentDate < lastWeek.end{
+        while currentDate < lastWeek.end {
             days.append(currentDate)
-            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+            guard let nexttDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { return [] }
+            currentDate = nexttDate
         }
         return days
     }
     
     func nextMonth(from date: Date) -> Date {
-        
-        calendar.date(byAdding: .month, value: 1, to: date) ?? date
+        guard let firstDayInter = calendar.dateInterval(of: .month, for: date) else { return date }
+        return firstDayInter.end
     }
     
     func previousMonth(from date: Date) -> Date {
-        
-        calendar.date(byAdding: .month, value: -1, to: date) ?? date
+        guard let firstDayInter = calendar.dateInterval(of: .month, for: date) else { return date }
+        return calendar.date(byAdding: .month, value: -1, to: firstDayInter.start) ?? date
     }
     
     func isSameDay(_ firstDate: Date, _ secondDate: Date) -> Bool{
@@ -64,15 +71,14 @@ struct CalendarManager {
         calendar.component(.day, from: date)
     }
     
-    func isToday(_ date: Date) -> Bool{
-        calendar.isDateInToday(date)
+    func isToday(_ date: Date, referenceDate: Date = Date()) -> Bool{
+        calendar.isDate(date, inSameDayAs: referenceDate)
     }
     
     private var monthYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
-        return formatter
-    }()
+        return formatter}()
     
     func monthYearString(from date: Date) -> String {
         monthYearFormatter.string(from: date)

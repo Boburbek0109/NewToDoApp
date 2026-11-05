@@ -13,8 +13,10 @@ import Combine
 final class CalendarPlanViewModel: ObservableObject {
     
     @Published private(set) var plans: [CalendarPlan] = []
+    @Published private(set) var loadErrorMessages: String?
     
     private var calendarContext: ModelContext
+//    private var simulateLoadFailure = true
     
     init(calendarContext: ModelContext) {
         self.calendarContext = calendarContext
@@ -23,13 +25,12 @@ final class CalendarPlanViewModel: ObservableObject {
     
     func loadPlans() {
         let descriptor = FetchDescriptor<CalendarPlan>(
-            sortBy: [SortDescriptor(\.startDate)]
-        )
-        
+            sortBy: [SortDescriptor(\.startDate)])
         do {
             plans = try calendarContext.fetch(descriptor)
+            loadErrorMessages = nil
         } catch {
-            print("Failed to load calendar plans: \(error)")
+            loadErrorMessages = error.localizedDescription
         }
     }
     
@@ -49,34 +50,38 @@ final class CalendarPlanViewModel: ObservableObject {
             throw CalendarPlanValidationError.invalidDateRange
         }
         
+        let saveContext = ModelContext(calendarContext.container)
+        saveContext.autosaveEnabled = false
+        
         let plan = CalendarPlan(
             title: trimmedTitle,
             details: trimmedDetails,
             startDate: startDate,
-            endDate: endDate
-        )
+            endDate: endDate)
         
-        
-        calendarContext.insert(plan)
-        try calendarContext.save()
+        saveContext.insert(plan)
+        try saveContext.save()
         loadPlans()
     }
     
-    func deletePlan(_ plansToDelete: [CalendarPlan]) throws{
+    func deletePlan(_ plansToDelete: [CalendarPlan]) throws {
+        let deleteContext = ModelContext(calendarContext.container)
+        deleteContext.autosaveEnabled = false
+        
         for plan in plansToDelete {
-            calendarContext.delete(plan)
+            let deleteID = plan.id
+            let predicte = #Predicate<CalendarPlan> { delet in
+                delet.id == deleteID}
+            let description = FetchDescriptor<CalendarPlan>(predicate: predicte)
+            let deleteMatching = try deleteContext.fetch(description)
+            guard let deletedPlan = deleteMatching.first else { throw NSError(domain: "CalendarPlan.Delete", code: 1, userInfo: [NSLocalizedDescriptionKey: "This event could not be found."]) }
+            deleteContext.delete(deletedPlan)
         }
-        try calendarContext.save()
+        try deleteContext.save()
         loadPlans()
     }
     
-    func updatePlan(
-        _ plan: CalendarPlan,
-        title: String,
-        details: String,
-        startDate: Date,
-        endDate: Date
-    ) throws {
+    func updatePlan (_ plan: CalendarPlan, title: String, details: String, startDate: Date,endDate: Date) throws {
         
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedDetails = details.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -87,13 +92,25 @@ final class CalendarPlanViewModel: ObservableObject {
         guard endDate >= startDate else {
             throw CalendarPlanValidationError.invalidDateRange
         }
+        let updateContext = ModelContext(calendarContext.container)
+        updateContext.autosaveEnabled = false
+        let planID = plan.id
+        let predicte = #Predicate<CalendarPlan> { afs in
+            afs.id == planID }
+        let description = FetchDescriptor<CalendarPlan>(predicate: predicte)
+        let matchingPlan = try updateContext.fetch(description)
+        guard let savedPlan = matchingPlan.first else { throw NSError(domain: "CalendarPlan.Update", code: 1, userInfo: [NSLocalizedDescriptionKey: "This event could not be found."]) }
         
-        plan.title = trimmedTitle
-        plan.details = trimmedDetails
-        plan.startDate = startDate
-        plan.endDate = endDate
+        savedPlan.title = trimmedTitle
+        savedPlan.details = trimmedDetails
+        savedPlan.startDate = startDate
+        savedPlan.endDate = endDate
         
-        try calendarContext.save()
+        try updateContext.save()
+        plan.title = savedPlan.title
+        plan.details = savedPlan.details
+        plan.startDate = savedPlan.startDate
+        plan.endDate = savedPlan.endDate
         loadPlans()
     }
 }

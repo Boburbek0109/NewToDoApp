@@ -20,13 +20,16 @@ enum PersistenceError: LocalizedError{
 }
 
 enum PersistenceController {
-    static func makeContainer() throws -> ModelContainer {
+    static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
         let schema = Schema([
             ModelTask.self,
             ModelNote.self,
             NoteCategory.self,
-            CalendarPlan.self
-        ])
+            CalendarPlan.self])
+        if inMemory {
+            let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            return try ModelContainer(for: schema, configurations: [configuration])
+        }
         
         let storeURL = try makeStoreURL()
         let configuration = ModelConfiguration("ToDo", schema: schema, url: storeURL)

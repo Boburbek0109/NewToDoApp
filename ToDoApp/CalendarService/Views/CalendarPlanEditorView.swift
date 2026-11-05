@@ -15,32 +15,25 @@ struct CalendarPlanEditorView: View{
     @State private var contentPlan: String
     @State private var startDate:  Date
     @State private var endDate: Date
+    @State private var saveErrorMessage: String?
     
     private let plan: CalendarPlan?
-    let onSave: (CalendarPlan?, String, String, Date, Date) -> Void
+    let onSave: (CalendarPlan?, String, String, Date, Date) throws -> Void
     
     init(
         plan: CalendarPlan? = nil,
-        onSave: @escaping (CalendarPlan?, String, String, Date, Date) -> Void
+        initialDay: Date,
+        calendar: Calendar,
+        onSave: @escaping (CalendarPlan?, String, String, Date, Date) throws -> Void
     ) {
         self.plan = plan
         self.onSave = onSave
         
         _titlePlan = State(initialValue: plan?.title ?? "")
         _contentPlan = State(initialValue: plan?.details ?? "")
-        _startDate = State(initialValue: plan?.startDate ?? Date())
-        _endDate = State(initialValue: plan?.endDate ?? Date().addingTimeInterval(3600))
-    }
-    
-    private var minimumDate: Date {
-        if let plan{
-            return min (
-                Calendar.current.startOfDay(for: Date()),
-                Calendar.current.startOfDay(for: plan.startDate)
-            )
-        }
-        
-        return Calendar.current.startOfDay(for: Date())
+        let defaultStart = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: initialDay)
+        _startDate = State(initialValue: plan?.startDate ?? defaultStart ?? initialDay)
+        _endDate = State(initialValue: plan?.endDate ?? (defaultStart ?? initialDay).addingTimeInterval(3600))
     }
     
     var body: some View{
@@ -54,8 +47,12 @@ struct CalendarPlanEditorView: View{
                     DatePicker(
                         "Start",
                         selection: $startDate,
-                        in: minimumDate...,
                         displayedComponents: [.date, .hourAndMinute])
+                    .onChange(of: startDate) {
+                        if startDate > endDate {
+                            endDate = startDate.addingTimeInterval(3600)
+                        }
+                    }
                     
                     DatePicker(
                         "End",
@@ -68,6 +65,10 @@ struct CalendarPlanEditorView: View{
                 Section("Notes") {
                     TextField("Add notes (optional)", text: $contentPlan, axis: .vertical)
                         .lineLimit(3...6)
+                }
+                if let message = saveErrorMessage {
+                    Text(message)
+                        .foregroundStyle(.red)
                 }
             }
             .navigationTitle(plan == nil ? "New Plan" : "Edit Plan")
@@ -82,10 +83,11 @@ struct CalendarPlanEditorView: View{
                     Button("Save"){
                         let trimmedPlan = titlePlan.trimmingCharacters(in: .whitespacesAndNewlines)
                         let trimmedContent = contentPlan.trimmingCharacters(in: .whitespacesAndNewlines)
-                        
-                        onSave(plan, trimmedPlan, trimmedContent, startDate, endDate)
-                        dismiss()
-                        
+                        do{
+                            try onSave(plan, trimmedPlan, trimmedContent, startDate, endDate)
+                        } catch {
+                            saveErrorMessage = error.localizedDescription
+                        }
                     }
                     .disabled(titlePlan.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }

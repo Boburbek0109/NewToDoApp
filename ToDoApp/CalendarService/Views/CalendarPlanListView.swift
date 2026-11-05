@@ -15,39 +15,41 @@ struct CalendarPlanListView: View {
     let onDelete: (CalendarPlan) -> Void
     
     var body: some View {
-        List{
-            
+        Group{
             if plans.isEmpty {
-                VStack(alignment: .leading){
-                    Text("No plans for this day.")
-                    Text("Tap + to add a plan")
-                }
-                .font(.title2)
-                .frame(height: 55)
-                .foregroundStyle(.gray)
+                ContentUnavailableView(
+                    "No plans for this day.",
+                    systemImage: "calendar",
+                    description: Text("Tap + to add a plan"))
             } else {
-                
                 ForEach(Array(plans.enumerated()), id: \.element.id) { index, task in
-                    
                     HStack{
-                        Text("\(index + 1).")
+                        Text("\(index + 1) ")
                         
                         VStack(alignment: .leading, spacing: 3){
                             Text(task.title)
+                                .font(.title3)
+                                .foregroundStyle(.primary)
                             
                             if !task.details.isEmpty{
                                 Text(task.details)
+                                    .lineLimit(3)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
+                            Text(task.startDate.formatted(.dateTime.month(.abbreviated).day().hour().minute()))
+                                .font(.caption)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .foregroundStyle(.secondary)
                         }
-                        Spacer()
                     }
-                    .frame(height: 55)
+                    .frame(minHeight: 55)
                     .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
                     .background(.BG, in: .rect(cornerRadius: 16))
+                    .listRowInsets(.vertical, 0)
                     .swipeActions {
-                        Button(role: .destructive){
+                        Button(role: .destructive) {
                             onDelete(task)
                         } label: {
                             Label("Delete", systemImage: "trash")
@@ -60,8 +62,5 @@ struct CalendarPlanListView: View {
                 }
             }
         }
-        .listStyle(.plain)
     }
 }
-
-        

@@ -12,7 +12,7 @@ struct CalendarHeaderView: View {
     @Binding var currentDate: Date
     @Binding var selectedDate: Date?
     
-    let manager = CalendarManager()
+    let manager: CalendarManager
     
     var body: some View {
         
@@ -35,6 +35,7 @@ struct CalendarHeaderView: View {
                 selectedDate = currentDate
             }) { Image(systemName: "chevron.right") }
         }
+        .buttonStyle(.borderless)
         .tint(.primary)
         .padding(.horizontal)
         

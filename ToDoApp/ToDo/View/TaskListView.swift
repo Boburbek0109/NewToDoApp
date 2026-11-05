@@ -56,7 +56,6 @@ struct TaskListView: View {
         }
         .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle(formattedDate)
-        
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button {

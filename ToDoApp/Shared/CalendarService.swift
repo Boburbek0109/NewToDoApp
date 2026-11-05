@@ -17,30 +17,28 @@ struct CalendarStats {
 
 actor CalendarService {
     static let instance = CalendarService()
+    private let calendar: Calendar
 
-    private let calendar = Calendar.current
-
-    private var currentDay: Int { calendar.component(.day, from: Date()) }
-
-    private var daysInCurrentMonth: Int {
-        calendar.range(of: .day, in: .month, for: Date())?.count ?? 30
+    init(calendar: Calendar = Calendar.current) {
+        self.calendar = calendar
     }
-
-    private var passedDays: Int { currentDay }
-
-    private var totalDays: Int { daysInCurrentMonth }
-
-    private var percent: Double { Double(passedDays) / Double(totalDays) * 100 }
-
-    func stats() -> CalendarStats {
-        CalendarStats(
+    
+    func stats(referenceDate: Date) -> CalendarStats {
+        let currentDay = calendar.component(.day, from: referenceDate)
+        let daysInCurrentMonth = calendar.range(of: .day, in: .month, for: referenceDate)?.count ?? 30
+        let percent = Double(currentDay) / Double(daysInCurrentMonth) * 100
+        
+        return CalendarStats(
             currentDay: currentDay,
             daysInCurrentMonth: daysInCurrentMonth,
             percent: percent
         )
     }
+    
+    func nextMidnight(referenceDate: Date) -> Date? {
+        calendar.dateInterval(of: .day, for: referenceDate)?.end
+    }
 }
-
 
 var formattedDate: String {
     let formatter = DateFormatter()

@@ -10,67 +10,65 @@ import SwiftData
 
 struct ContentView: View {
     
-    let columns = [GridItem(.flexible()), GridItem(.flexible())]
-    
     var body: some View {
         NavigationStack {
             ScrollView {
-                
                 DataDayView()
                 
-                NavigationLink{
-                    FavoriteView()
-                    } label: {
-                        ZStack{
-                            RoundedRectangle(cornerSize: CGSize(width: 30, height: 30))
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 180)
-                                .foregroundStyle(.gray.opacity(0.4))
-                                
-                            Label("Favorites", systemImage: "star.fill")
-                                .foregroundStyle(.black)
-                                .font(.title)
-                        }
-                }
-                
-                
-                LazyVGrid(columns: columns, spacing: 10) {
-                    
+                VStack(spacing: 16){
                     NavigationLink {
                         QuickNote()
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 30)
-                                .frame(width: 180, height: 180)
-                                .foregroundStyle(.gray.opacity(0.4))
-
-                            Label("Note your plans", systemImage: "pencil")
-                                .foregroundStyle(.black)
-                                .font(.title3)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 180)
+                                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+                            
+                            Label("Notes", systemImage: "pencil")
+                                .foregroundStyle(.primary)
+                                .font(.title2)
+                                .fontWeight(.semibold)
                         }
                     }
-                    
                     
                     NavigationLink {
                         TaskListView()
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 30)
-                                .frame(width: 180, height: 180)
-                                .foregroundStyle(.gray.opacity(0.4))
-
-                            Label("Daily Tasks", systemImage: "calendar")
-                                .foregroundStyle(.black)
-                                .font(.title3)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 180)
+                                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+                            
+                            Label("Tasks", systemImage: "calendar")
+                                .foregroundStyle(.primary)
+                                .font(.title2)
+                                .fontWeight(.semibold)
                         }
                     }
-                        
-                        
+                    
+                    NavigationLink{
+                        FavoriteView()
+                    } label: {
+                        ZStack{
+                            RoundedRectangle(cornerSize: CGSize(width: 30, height: 30))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 180)
+                                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+                            
+                            Label("Favorites", systemImage: "star.fill")
+                                .foregroundStyle(.primary)
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                        }
+                    }
                 }
+                .buttonStyle(.plain)
             }
             .padding(.horizontal)
+            .background(Color(uiColor: .systemGroupedBackground))
         }
-        .ignoresSafeArea(edges: .all)
     }
 }
     

@@ -17,10 +17,11 @@ enum StartupState {
 struct ToDoApp: App {
     
     @State private var startupState: StartupState
+    private static let isTesting = ProcessInfo.processInfo.environment["TODO_TESTING"] == "1"
     
     init() {
         do {
-            let container = try PersistenceController.makeContainer()
+            let container = try PersistenceController.makeContainer(inMemory: Self.isTesting)
             _startupState = State(initialValue: StartupState.ready(container))
         } catch {
             _startupState = State(initialValue: StartupState.failed(error.localizedDescription))
@@ -29,7 +30,7 @@ struct ToDoApp: App {
     
     func retryOpeningStore() {
         do {
-            let container = try PersistenceController.makeContainer()
+            let container = try PersistenceController.makeContainer(inMemory: Self.isTesting)
             startupState = StartupState.ready(container)
         } catch {
             startupState = StartupState.failed(error.localizedDescription)
